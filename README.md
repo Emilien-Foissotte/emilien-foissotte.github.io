@@ -1,10 +1,10 @@
-# Personal website
+# Personal website
 
 This site is made with ❤️ (and few ☕) by Emilien Foissotte using [Hugo](https://gohugo.io/)
 
 Have a nice glance, happy to see you here !
 
-## How to
+## How to
 
 [Install hugo](https://gohugo.io/getting-started/quick-start/)
 

@@ -1,8 +1,12 @@
 baseURL: 'https://emilien-foissotte.github.io/'
 languageCode:  'en-us'
-title: 'Emilien Foissotte Blog'
+title: 'Blog | Émilien F. '
 theme: 'PaperMod'
 paginate: 5
+
+minify:
+  disableXML: true
+  minifyOutput: true
 
 menu:
   main:
@@ -13,7 +17,7 @@ menu:
       url: https://www.datascienceportfol.io/EmilienFoissotte
       weight: 5
     - name: Posts
-      url: /blog/
+      url: /Archives/
       weight: 6
     - name: Tags
       url: /tags/
@@ -33,7 +37,7 @@ params:
   ShowReadingTime: true
   ShowShareButtons: false
   ShowPostNavLinks: true
-  ShowBreadCrumbs: true
+  ShowBreadCrumbs: false
   ShowCodeCopyButtons: false
   ShowWordCount: false
   ShowRssButtonInSectionTermList: true
@@ -60,7 +64,7 @@ params:
       I'm a Machine Learning Engineer working on various components of MLOps stack 🤖
 
       -
-      This site is quite fresh and still a work in progress, happy to see you here, hope you'll enjoy the look around.
+      This swebsite is quite fresh and still a work in progress, happy to see you here, hope you'll enjoy the look around.
 
       -
       Feel free to read some of my ML related ramblings about my worklife, but also other tech-adjacent items I've come accross working on side projects.
@@ -72,8 +76,8 @@ params:
           url: "https://www.linkedin.com/in/emilien-foissotte44/"
 
   giscus:
-    repo: emilien-foissotte/emilien-foissotte.github
-    repoID:
+    repo: emilien-foissotte/emilien-foissotte.github.io
+    repoID: R_kgDOJLROeA
     category: Announcements
     categoryID: DIC_kwDODrAcJc4CUA9K
     mapping: url

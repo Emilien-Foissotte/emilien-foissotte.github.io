@@ -20,8 +20,8 @@ My education and academic backougn is a mix of computer science 🤖, math ➗ a
 I went in ML/Data Science topics in 2019 after discovering in a school project where we
  tried to modelize weather 🌡️ for smartgrids ⚡.
 
-I enjoy [programming](https://github.com/Emilien-Foissotte) on my day life.
-At night, I kick out some [blog post]('https://emilien-foissotte.github.io') and love exploring new topics, exposing stuff on my [website](emilienfoissotte.fr).
+I enjoy [programming](https://github.com/Emilien-Foissotte/) on my day life.
+At night, I kick out some [blog post](https://emilien-foissotte.github.io/) and love exploring new topics, exposing stuff on my [website](http://emilienfoissotte.fr).
 
 Beside work, I enjoy [reading](https://en.wikipedia.org/wiki/Animal_Farm) 📚, watching [movies](https://en.wikipedia.org/wiki/The_Night_of_the_12th)  🎬,
 listening to [podcasts](https://www.binge.audio/podcast/programme-b)🎙️, [cooking](https://www.undejeunerdesoleil.com), crafting some DIY cosmetics, visting places of art, travelling, hiking, rowing and exploring new topics.

@@ -2,6 +2,9 @@
 title: "Starting blogging"
 date: 2023-03-18T20:07:14+01:00
 draft: false
+tags: []
+ShowToc: true
+TocOpen: false
 ---
 
 ## Introduction

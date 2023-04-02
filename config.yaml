@@ -1,0 +1,82 @@
+baseURL: 'https://emilien-foissotte.github.io/'
+languageCode:  'en-us'
+title: 'Emilien Foissotte Blog'
+theme: 'PaperMod'
+paginate: 5
+
+menu:
+  main:
+    - name: About Me
+      url: /me/
+      weight: 4
+    - name: Projects
+      url: https://www.datascienceportfol.io/EmilienFoissotte
+      weight: 5
+    - name: Posts
+      url: /blog/
+      weight: 6
+    - name: Tags
+      url: /tags/
+      weight: 7
+
+taxonomies:
+  category: categories
+  tag: tags
+
+params:
+  env: production
+  description: "Portfolio for my work and also blog for my thoughts"
+  author: Émilien Foissotte
+  comments: true
+  defaultTheme: auto # dark, light
+
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: false
+  ShowWordCount: false
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+
+  assets:
+    # disableHLJS: true # to disable highlight.js
+    # disableFingerprinting: true
+    favicon: "/img/favicon.ico"
+
+  homeInfoParams:
+    Title: Hello there!
+    Content: |
+
+      -
+      My name is Émilien Foissotte, welcome to my blog / portfolio 👨‍💻
+
+      I'm a Machine Learning Engineer working on various components of MLOps stack 🤖
+
+      -
+      This site is quite fresh and still a work in progress, happy to see you here, hope you'll enjoy the look around.
+
+      -
+      Feel free to read some of my ML related ramblings about my worklife, but also other tech-adjacent items I've come accross working on side projects.
+
+  socialIcons:
+        - name: github
+          url: "https://github.com/Emilien-Foissotte"
+        - name: LinkedIn
+          url: "https://www.linkedin.com/in/emilien-foissotte44/"
+
+  giscus:
+    repo: emilien-foissotte/emilien-foissotte.github
+    repoID:
+    category: Announcements
+    categoryID: DIC_kwDODrAcJc4CUA9K
+    mapping: url
+    inputPosition: top
+    theme: transparent_dark
+    lang: en

@@ -1,6 +1,8 @@
 ---
 title: "About Me"
-
+searchHidden: true
+comments: false
+hidemeta: true
 ---
 
 ![Me](/img/me/me.png#center)
@@ -31,3 +33,5 @@ listening to [podcasts](https://www.binge.audio/podcast/programme-b)🎙️, [co
 
 Please, do not hesitate to contact me at emilien foissotte 44 (it should joined) plus the
 special sign you know in emails, at gmail.com 📨
+
+Émilien

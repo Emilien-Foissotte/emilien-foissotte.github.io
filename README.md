@@ -13,7 +13,7 @@ Then review your content `hugo server`
 If that sounds right, push to the `main` branch, Github Action will cary on the job to
 deploy it.
 
-### WIP Tracker
+### WIP Tracker (for my own work organization)
 
 - [x] Set up comment system and counter for engagement, as well as portfolio
 - [ ] Rework first deployment post

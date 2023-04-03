@@ -13,6 +13,9 @@ menu:
     - name: About Me
       url: /me/
       weight: 4
+    - name: Search
+      url: /search/
+      weight: 4
     - name: Projects
       url: https://www.datascienceportfol.io/EmilienFoissotte
       weight: 5
@@ -35,10 +38,10 @@ params:
   defaultTheme: auto # dark, light
 
   ShowReadingTime: true
-  ShowShareButtons: false
+  ShowShareButtons: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: false
-  ShowCodeCopyButtons: false
+  ShowCodeCopyButtons: true
   ShowWordCount: false
   ShowRssButtonInSectionTermList: true
   UseHugoToc: true
@@ -53,6 +56,17 @@ params:
     # disableHLJS: true # to disable highlight.js
     # disableFingerprinting: true
     favicon: "/img/favicon.ico"
+
+  editPost:
+    URL: "https://github.com/Emilien-Foissotte/content"
+    Text: "Suggest Changes" # edit text
+    appendFilePath: true # to append file path to Edit link
+
+  outputs:
+    home:
+      - HTML
+      - RSS
+      - JSON
 
   homeInfoParams:
     Title: Hello there!
@@ -78,9 +92,9 @@ params:
   giscus:
     repo: emilien-foissotte/emilien-foissotte.github.io
     repoID: R_kgDOJLROeA
-    category: Announcements
-    categoryID: DIC_kwDODrAcJc4CUA9K
-    mapping: url
+    category: Articles
+    categoryID: DIC_kwDOJLROeM4CVfjs
+    mapping: og:title
     inputPosition: top
-    theme: transparent_dark
+    theme: light
     lang: en

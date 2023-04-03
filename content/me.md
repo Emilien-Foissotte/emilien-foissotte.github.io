@@ -3,6 +3,7 @@ title: "About Me"
 searchHidden: true
 comments: false
 hidemeta: true
+ShowPostNavLinks: false
 ---
 
 ![Me](/img/me/me.png#center)

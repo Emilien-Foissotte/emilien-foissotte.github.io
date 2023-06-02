@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 printf -v year '%(%Y)T' -1
 printf -v month '%(%m)T' -1
 

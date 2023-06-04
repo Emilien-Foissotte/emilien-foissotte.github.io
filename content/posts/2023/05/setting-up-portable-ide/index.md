@@ -66,10 +66,10 @@ On debian, give a go to this installation command.
 sudo apt-get update && sudo apt install guake
 ```
 
-Good to go ? Now install tmux, same stuff
+Good to go ? Now install tmux (and xclip for copy paste commands), same stuff
 
 ```sh
-sudo apt install tmux
+sudo apt install tmux xclip
 ```
 
 Let's tweak a little bit tmux, fire a configuration by doing
@@ -84,11 +84,197 @@ Now it's time to review how tmux work.
 
 First by doing `tmux` you will start the tmux server. By modifying `~/.tmux.conf`, you can modify your key bindings in order to change the way you interact with it.
 
-Let's review the basic workflow.
+Let's do some workaround to modify a little bit the original behavior.
 
-At start, you can create _sessions_. A _session_ is a placeholder for workspaces and allows you to separate differents windows and workspace.
+The tmux prefix (_i.e. the shortcuts to fire up some tmux commands from keyboard_) is not suited for me and I find it not very ergonomic, as CTRL and B are far away to get reached by a single hand. I rather, as suggested by <cite> Josean Martinez[^1]</cite>, change it to _CTRL + a_, by adding this to `~/.tmux.conf`: 
 
-How create one ? By doing `tmux new -s your_session_name`. This one will attached to your current tmux session. If you want to detach it, do a `tmux detach:` 
+```sh
+set -g prefix C-a # set the prefix
+unbind C-b # remove CTRL+b keybinding
+bind-key C-a send-prefix # bind CTRL + A as prefix shortcut
+```
+
+To memorize way better the way to arrange window (and splitting them), add this also :
+
+```sh
+unbind % # remove the original horizontal shortcut split
+bind | split-window -h # bind with pipe to horizontal split 
+
+unbind '"' # remove the original vertical shortcut split
+bind - split-window -v # bind dash to vertical split
+```
+
+We will come back latter to the choice of "|" and "-" for this shortcuts.
+
+You can do now a `tmux source ~/.tmux.conf` to reload you configuration dynamically.
 
 
+[^1]: Josean has made an excellent video on this topic, available [here](https://www.youtube.com/watch?v=U-omALWIBos)
+
+Let's now review the basic workflow.
+
+#### Sessions
+
+At start, you can create _sessions_. A _session_ is a placeholder for workspaces and allows you to separate differents way of arranging workspaces and isolate them.
+
+How create one ? By doing `tmux new -s your_session_name`. You will change to a new terminal window, an the tmux server attach this session to your tmux client. You can now do a `tmux ls` to list all sessions. You can see the named session *test* is said to be attached.  
+This one will attached to your current tmux session. If you want to detach it to let it run in background and go back to your previous terminal, do a `tmux detach`.
+
+![tmuxls](tmuxls.png#center)
+
+To go back to your session, in a detached state (no current session is attached), do a `tmux attach -t your_session_name`.
+View all your sessions by doing a _prefix (CTRL-A) + s_ to  view a listing of all your sessions and a short snapshot of each one of them. 
+
+![lssessions](lssessions.png#center)
+
+So efficient and comprehensive, isn't it ?
+
+#### Windows
+
+As you can see, in each session, you can have multiples windows, a window consisting of a view. The curret windows is displayed with a small asterix on this side. You can fire up a new windows in the current session, by doing a _prefix (CTRL-a) + c_ command. You can then rename it, with a _CTRL-a + ,_. They are numbered, so you can navigate easily to the wished windows in your current session with a _CTRL-a + X_ where X is the number of the wished window.
+
+Move around very fast between windows by going to the next one doing a _CTRL-a + n_ or the previous one with a _CTRL-a + p_. 
+
+#### Panes
+
+Hence, now you have seen how to fire up and move between panes, let's review panes. Panes are simply subparts of your window. You can split your window in multiple panes, like in this current example, where panes are numbered, throught _CTRL-a + q_. 
+
+To split a pane in 2 vertically separated panes (as the symbol | would suggest), do a _CTRL-a + |_. To split in 2 horizontal panes, do a _CTRL-a + -_. 
+
+To rezise and move around them using vim move keys (k for ↑), (j for ↓), (h for ←) and (l for →) add this to your `~/.tmux.conf` :
+
+```sh
+bind -r j resize-pane -D 5
+bind -r k resize-pane -U 5
+bind -r l resize-pane -R 5
+bind -r h resize-pane -L 5
+
+bind -r m resize-pane -Z
+set -g mouse on
+
+set-window-option -g mode-keys vi
+```
+
+You can now move around panes with _CTRL-a + j_ for instance to go down, maximize or reduce a pane to full view with _CTRL-a + m_ and resize your panes by moving it with mouse or doing a _CTRL-h_ to resize in the left direction (vim movements again here).
+
+Copy pasting in tmux can seem to be at start a little bit confusing, but it's very simple.
+
+First add this elements to your `~/.tmux.conf`:
+
+```sh
+set-option -s set-clipboard off
+
+bind P paste-buffer # to paste with a capital p
+bind-key -T copy-mode-vi 'v' send -X begin-selection # start selecting text with "v"
+bind-key -T copy-mode-vi 'y' send -X copy-selection # copy text with "y"
+unbind -T copy-mode-vi Enter
+bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel 'xclip -se c -i'
+bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel 'xclip -se c -i'
+```
+
+To copy something (from keyboard) : 
+
+- Enter in visual mode, with _CTRL-a + [_
+- Move around the elements with vi movements and drop the cursor on the beginning of the selection. Enter copy mode with _v_ key.
+- Move the cursor to the end of the selection and and finish selection with _y_ key.
+- Exit visual mode with _Enter_ key. 
+- Paste at desired location and do a _CTRL-a + P_ to paste selection in the current buffer.
+
+To copy somtething (using mouse): 
+- just drag on the text you want to copy and drop.
+- Hence, the selection is in the copy buffer (be sure to have xclip installed.)
+- Paste it somewhere else, using _CTRL + v_ or _CTRL-Maj + v_. 
+
+#### Plugins
+
+Tmux can resurrect and save your sessions, windows and panes throught restarts using some plugin.
+
+First install a plugin manager, [tpm](https://github.com/tmux-plugins/tpm) by firing up this command :
+
+```sh
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+Install all plugins by adding this to your `~/.tmux.conf`:
+
+```sh
+# add tmux plugins to tpm
+# tpm plugin
+set -g @plugin 'tmux-plugins/tpm'
+
+# list of tmux plugins
+set -g @plugin 'christoomey/vim-tmux-navigator' # for navigating panes and vim/nvim with Ctrl-hjkl
+set -g @plugin 'tmux-plugins/tmux-resurrect' # persist tmux sessions after computer restart
+set -g @plugin 'tmux-plugins/tmux-continuum' # automatically saves sessions for you every 15 minutes
+
+set -g @resurrect-capture-pane-contents 'on' # allow tmux-ressurect to capture pane contents
+set -g @continuum-restore 'on' # enable tmux-continuum functionality
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
+```
+
+### Neovim
+
+Now our setup for terminal multiplexer is perfect (and somehow customizable), we can move on to view the way we can use [Neovim](https://neovim.io/) to edit code efficiently.
+
+#### Installation
+
+Install the paquet using the AppImage, alongside the python support :
+
+```sh
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+chmod u+x nvim.appimage
+./nvim.appimage 
+```
+
+Expose nvim globally for all users doing
+
+```sh
+# Optional
+sudo mv squashfs-root /
+sudo ln -s /squashfs-root/AppRun /usr/bin/nvim
+```
+
+Create an isolated venv for neovim `:python` support, either by installing python3-neovim, with :
+
+```sh
+sudo apt-get install python3-neovim
+```
+
+Or, if you want to isolate the virtual environnement and manage the python version (I used 3.9) of the virtual environment, do 
+
+```sh
+cd /squashfs-root/
+python3 -m venv env
+```
+
+and add this at the top of your nvim configuration file under `~/.config/nvim/init.vim`:
+
+```vim
+let g:python3_host_prog='/squashfs-root/env/bin/python3.9'
+let g:python_host_prog='/squashfs-root/env/bin/python'
+```
+
+I would truly recommend doing `nvim` and then the embedded tutorial to discover the power of nvim with `:help` 
+
+#### Using plugins
+
+To make an extensive use of nvim, you can use a lot of plugins. Cool ones are those who allow you to vizualize your repo as a tree for instance. 
+
+![nvimview](nvimview.png)
+
+To do this, install [Dein](https://github.com/Shougo/dein.vim) with the provided installer by doing :
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein-installer.vim/master/installer.sh)"
+```
+
+Be sure that you find back the Python installed venv in the top of `init.vim` file or put it back again if dein installer has made it disappear.
+
+Now you can add some plugins, by adding the list under `~/.config/nvim/init.vim` :
+
+```vim
+
+```
 

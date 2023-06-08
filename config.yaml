@@ -57,6 +57,7 @@ params:
   hideSummary: false
   showtoc: false
   tocopen: false
+  ShowFullTextinRSS: true
 
   assets:
     # disableHLJS: true # to disable highlight.js
@@ -94,10 +95,12 @@ params:
       Feel free to read some of my ML related ramblings about my worklife, but also other tech-adjacent items I've come accross working on side projects.
 
   socialIcons:
-    - name: github
+    - name: Github
       url: "https://github.com/Emilien-Foissotte"
     - name: LinkedIn
       url: "https://www.linkedin.com/in/emilien-foissotte44/"
+    - name: RSS
+      url: "https://emilien-foissotte.github.io/index.xml"
 
   giscus:
     repo: emilien-foissotte/emilien-foissotte.github.io

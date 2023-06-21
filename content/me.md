@@ -10,11 +10,11 @@ ShowPostNavLinks: false
 
 Hi ! 👋
 
-I'm a Machine Learning Engineer at [SITA](https://www.sita.aero/), in a team where we develop and deploy
-ML models to reduce fuel consumption ⛽, and therefore carbon footprint 🍃 of aircrafts with
-[Optiflight](https://www.sita.aero/solutions/sita-for-aircraft/digital-day-of-operations/optiflight/) .
+I'm a Machine Learning Operations Engineer consultant at [Revolve](https://revolve.team/), where i work on ML and Data realted topics in order to be able to deploy Machine Learning applications for various industrial purposes.
 
-Before joining SITA, I worked at [Safran](https://www.safran-group.com/), a turbofan
+
+Before joining Revolve, I fullfilled a role of ML Engineer at [SITA](https://www.sita.aero/), in a team where we developed and deploy
+ML models to reduce fuel consumption ⛽, and therefore carbon footprint 🍃 of aircrafts. I worked also at [Safran](https://www.safran-group.com/), a turbofan
 engine crafting and maintenance compagny ✈️ on predictive maintenance topics.
 
 I'm an engineer from [ISAE-ENSMA](https://www.ensma.fr/) an engineering school 🏫 specialized in aeronautics
@@ -36,3 +36,5 @@ Please, do not hesitate to contact me at emilien foissotte 44 (it should joined)
 special sign you know in emails, at gmail.com 📨
 
 Émilien
+
+*NB: All opinions and topics discussed in this blog post are solely my own and no way commit my current, past or future employers.*

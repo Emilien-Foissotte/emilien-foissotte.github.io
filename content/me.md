@@ -10,7 +10,7 @@ ShowPostNavLinks: false
 
 Hi ! 👋
 
-I'm a Machine Learning Operations Engineer consultant at [Revolve](https://revolve.team/), where i work on ML and Data realted topics in order to be able to deploy Machine Learning applications for various industrial purposes.
+I'm a Machine Learning Operations Engineer consultant at [Revolve](https://revolve.team/), where I work on ML and Data related topics in order to be able to deploy Machine Learning applications for various industrial purposes. I'm a mix of a Data Scientist, a Data Engineer, a Software Engineer and a DevOps engineer ! 😄 
 
 
 Before joining Revolve, I fullfilled a role of ML Engineer at [SITA](https://www.sita.aero/), in a team where we developed and deploy

@@ -1,43 +1,203 @@
 ---
 title: "Personal Drive"
 description: ""
-date: 2023-07-09T22:00:06+02:00
+date: 2023-07-29T22:00:06+02:00
 publishDate: 2023-07-09T22:00:06+02:00
 draft: true
-tags: []
-ShowToc: false
+tags: ["Software Engineering", "Raspberry Pi", "Docker"]
+ShowToc: true
 TocOpen: false
 ---
+
 ## TL;DR
 
-This blog post will cover how to setup a secure personal cloud storage, behind a proxy. Runaway from Google Drive and Google Photos, host your cherry picked and shot bytes at home !
+This blog post will cover how to setup a monitored 📊 & secure personal cloud storage ⏏️,
+behind a proxy ⚙️, to let you expose other nice services on your home server 🏠
+
+Runaway from Google Drive and Google Photos 📷, host your cherry picked bytes
+at home 🚀 !
 
 ## Intro
 
-My girlfriend recently ran into a stressfull issue. She enjoy, as I do, taking pictures of our trips and daily life. Fortunately, Google as exposed the incredible feature of saving and sharing Photos from mobile in a glimpse, and also make use of shared albums. Let's say it, it is incredible ! 
+My girlfriend recently ran into a stressfull issue, let me explain briefly the root of the problem 😬
 
-However, as time goes, the amount of photos reached the free tier limit, and we found not acceptable to pay (far more when you are aware that you are giving "freely" to Google a huge sample of photo, that could be used as dataset for ML engineering stuff. Furthermore, as there is no proper isolation between Drive, Photos and Gmail, Google was sending my girlfriend alerts saying that she couldn't receive more mail, pretty uncomfortable when you are using this email as your primary source of digital contact (train & airplane ticket, bank account, cellphone billing..)
+![StressGif](https://media.giphy.com/media/17bvpzBFFQ5Xi/giphy.gif#center)
 
-The craftsmanship which reside in me come up with an idea to leverage the raspberry pi I use at home to stream medias (Plex Subscription, well deserved money), but here to host photos and drive storage.
+She enjoy, as I do, taking pictures of our trips and daily life.
+Fortunately, Google has exposed the incredible feature of saving and sharing
+Photos from mobile in a glimpse, and also make use of shared albums.
+Let's say it, it is incredible !
 
-It puts a little bit more pressure because it has to be more backed up than delegating it to Google, but I felt confident about setting this up.
+{{<figure src="loulousinge.jpg" caption="Nice photo of one of our last music festival 🎶" >}}
 
-Here he the architecture I've come up to, I wanted it to be isolated with some dockers containers for the ease of deploy/redeploy, secure during connections and free (big thanks to Newtcloud team for the incredible work). The backup will be made by sync local hard drives and store it on an Uptobox account. To monitor it, a Grafana dashboard will detail a little bit the system characteristics (CPU, RAM usage, filesystem usage of the Linux OS partition)..
+However, as time goes, the amount of photos reached the free tier limit, and
+we found unacceptable to pay (far more when you are aware that you are giving
+"freely" to Google a huge sample of photos, that could be used as dataset
+for ML engineering stuff) for an extra storage amount.
 
-[Mermaid graph]
+Furthermore, as there is no proper isolation between
+Drive, Photos and Gmail, Google was sending my girlfriend alerts saying that she
+couldn't receive more mail, pretty uncomfortable when you are using this email
+as your primary source of digital contact (train & airplane ticket,
+bank account, cellphone billing..)
+
+_POV of a new email 📧 arriving on almost full Gmail inbox_ 🤣 :
+![DangerGif](https://media.giphy.com/media/55itGuoAJiZEEen9gg/giphy.gif#center)
+
+The craftsmanship which resides in me came up with an idea to leverage the
+Raspberry Pi I use at home to stream medias ( [Plex](https://www.plex.tv/) Subscription,
+well deserved money), but there to host photos and drive storage.
+
+Here is the system context :
+{{<mermaid>}}
+
+graph TB
+linkStyle default fill:#ffffff
+
+subgraph diagram [System Landscape]
+style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Managed Users</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div>"]
+    style 1 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    16["<div style='font-weight: bold'>Smartphone</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div>"]
+    style 16 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    2["<div style='font-weight: bold'>Grafana</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div>"]
+    style 2 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    3["<div style='font-weight: bold'>Cloud Storage external Provider (Uptobox)</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div>"]
+    style 3 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    4["<div style='font-weight: bold'>RaspberryPI</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div>"]
+    style 4 fill:#dddddd,stroke:#9a9a9a,color:#000000
+
+    1-. "<div>Manage personal data throught<br />computer</div><div style='font-size: 70%'></div>" .->4
+    4-. "<div>is replicated (CRON)</div><div style='font-size: 70%'></div>" .->3
+    2-. "<div>Display and monitor system<br />info</div><div style='font-size: 70%'></div>" .->4
+    4-. "<div>Display and share data</div><div style='font-size: 70%'></div>" .->16
+    16-. "<div>Upload to backup data</div><div style='font-size: 70%'></div>" .->4
+    1-. "<div>Manage personal data throught<br />smartphone</div><div style='font-size: 70%'></div>" .->16
+
+end
+{{</mermaid>}}
+
+And here is the detailled overview of the container "RaspberryPI" (
+[C4 model](https://c4model.com/) terminology)
+{{< mermaid >}}
+graph TB
+linkStyle default fill:#ffffff
+
+subgraph diagram [RaspberryPI - Containers]
+style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Managed Users</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div>"]
+    style 1 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    3["<div style='font-weight: bold'>Cloud Storage external Provider (Uptobox)</div><div style='font-size: 70%; margin-top: 0px'>[Software System]</div>"]
+    style 3 fill:#dddddd,stroke:#9a9a9a,color:#000000
+
+    subgraph 4 [RaspberryPI]
+      style 4 fill:#ffffff,stroke:#9a9a9a,color:#9a9a9a
+
+      5["<div style='font-weight: bold'>NextCloudPi Web Application</div><div style='font-size: 70%; margin-top: 0px'>[Container]</div>"]
+      style 5 fill:#dddddd,stroke:#9a9a9a,color:#000000
+      6["<div style='font-weight: bold'>Database</div><div style='font-size: 70%; margin-top: 0px'>[Container]</div>"]
+      style 6 fill:#dddddd,stroke:#9a9a9a,color:#000000
+      7["<div style='font-weight: bold'>HDD1</div><div style='font-size: 70%; margin-top: 0px'>[Container]</div>"]
+      style 7 fill:#dddddd,stroke:#9a9a9a,color:#000000
+      8["<div style='font-weight: bold'>HDD2</div><div style='font-size: 70%; margin-top: 0px'>[Container]</div>"]
+      style 8 fill:#dddddd,stroke:#9a9a9a,color:#000000
+    end
+
+    5-. "<div>Store elements</div><div style='font-size: 70%'></div>" .->6
+    6-. "<div>is mounted on</div><div style='font-size: 70%'></div>" .->7
+    7-. "<div>is replicated (CRON)</div><div style='font-size: 70%'></div>" .->8
+    7-. "<div>is replicated (CRON)</div><div style='font-size: 70%'></div>" .->3
+    1-. "<div>Manage personal data throught<br />computer</div><div style='font-size: 70%'></div>" .->5
+
+end
+{{< /mermaid >}}
+
+It puts a little bit more pressure because it has to be more backed up than
+delegating it to Google, but I felt confident about setting this up (and
+[Uptobox](https://uptobox.com/) back me up in case my HDD at home burn or get in trouble.
+
+This is the architecture I've come up to, I wanted it to be isolated with some
+dockers containers for the ease of deploy/redeploy, secure during connections
+and free (big thanks to Newtcloud team for the incredible work).
+The backup will be made by sync local hard drives and store it on an Uptobox
+account. To monitor it, a Grafana dashboard will detail a little bit the system
+characteristics (CPU, RAM usage, filesystem usage of the Linux OS partition)..
+
+Here is a little overview of components used :
+
+- [NextCloudPi](https://github.com/nextcloud/nextcloudpi)
+- [Grafana](https://grafana.com/)
+- [Docker](https://www.docker.com/)
+- [Let's encrypt](https://letsencrypt.org/)
+- [Traefik](https://traefik.io/)
+
+All theses graphs have been generated using [Structurizr](https://structurizr.com),
+here is the architecture expressed in the DSL of C4 model :
+
+```txt
+workspace "NextCloudPi" "Home Personnal Storage System" {
+
+    model {
+        u = person "Managed Users"
+        monitoring = softwareSystem "Grafana"
+        webcloudprovider = softwareSystem "Cloud Storage external Provider (Uptobox)"
+        personnalcloudstorage = softwareSystem "RaspberryPI" {
+            webapp = container "NextCloudPi Web Application"
+            database = container "Database"
+            physicalstorage = container "HDD1"
+            physicalbackupstorage = container "HDD2"
+
+            u -> webapp "Manage personal data throught computer"
+            webapp -> database "Store elements"
+            database -> physicalstorage "is mounted on"
+            physicalstorage -> physicalbackupstorage "is replicated (CRON)"
+            physicalstorage -> webcloudprovider "is replicated (CRON)"
+
+        }
+        client = softwareSystem "Smartphone"
+        monitoring -> personnalcloudstorage "Display and monitor system info"
+        personnalcloudstorage -> client "Display and share data"
+        client -> personnalcloudstorage "Upload to backup data"
+        u -> client "Manage personal data throught smartphone"
+
+    }
+
+    views {
+
+    }
+
+}
+```
+
+Now the base roots of the architecture have been written down,
+we can move on into deploying the solution.
 
 ## Deploying the solution
 
-Secure your exposed raspberry pi with ufw and fail2ban. As the pi will be exposed to the internet, if you wish to access it in SSH, it is important to setup a good firewall to avoid brute force attacks, SSH fuzzers and all kind of scary stuff like that (do not worry, with a proper long password and good banning of failed IPs it is pretty decent)
-Install fail2ban paquet
+### Firewall
+
+First we need to secure your exposed raspberry pi with ufw and fail2ban.
+As the pi will be exposed to the internet, if you wish to access it in SSH,
+it is important to setup a good firewall to avoid brute force attacks, SSH fuzzers
+and all kind of scary stuff like that (do not worry, with a proper long password
+and good banning of failed IPs, it is pretty decent and you will not be bothered).
+
+Let's start by installing fail2ban paquet
 
 `sudo apt-get update && apt-get install fail2ban`
 
-Launch and verify status of fail2ban 
+Launch and verify status of fail2ban
 
-`sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl status fail2ban`
+`sudo systemctl start fail2ban && sudo systemctl
+enable fail2ban && sudo systemctl status fail2ban`
 
-Create a default conf for the jail ban by modifying this file `/etc/fail2ban/jail.d/custom.conf 
+Create a default conf for the jail ban by modifying
+this file `/etc/fail2ban/jail.d/custom.conf`.
+
+Be sure to add some IPs you will not include in the jail,
+in order to do not block yourself in case you mess up passwd.
 
 ```
 [DEFAULT]
@@ -46,9 +206,13 @@ findtime = 10m
 bantime = 24h
 maxretry = 3
 ```
-Quick explanation of settings If an IP fail over 3 times to connect in SSH during the last 10 minutes, it goes to jail for a ban time of 24h ☠️
 
-Monitor the activity of ssh by activating the watch of ssh daemon, sshd, modifying this file `/etc/fail2ban/jail.d/custom.conf`
+Quick explanation of settings If an IP fail over 3 times to
+connect in SSH during the last 10 minutes, it goes to jail
+for a ban time of 24h ☠️
+
+Monitor the activity of ssh by activating the watch of ssh
+daemon, sshd, modifying this file `/etc/fail2ban/jail.d/custom.conf`
 
 ```
 [sshd]
@@ -59,49 +223,378 @@ Reload fail2ban configuration to apply new jails configs
 
 `sudo systemctl restart fail2ban`
 
-Breaking into the Pi is now far more difficult, good job 😈 
+Breaking into the Pi is now far more difficult, good job 😈
 
-Add NAT rules with port 22 on your router. 
+Here is a small snapshot at the moment when I was writing theses lines.
+You can get yours (wait a few minute that some bot try to connect to your server).
 
-I also activate ufw on the pi exposed to avoid traffic coming in on unexpected ports.
+`sudo fail2ban-client get sshd banip --with-time`
 
-Make use of 2 files, the static traefik configuration (including the enabling of logs, of dashboard and docker socket watching)
+Look at all theses IPs that have been jailed !!
 
-```yaml
-Content of traefik.yml
+```txt
+45.136.153.217  2023-07-28 19:27:25 + 86400 = 2023-07-29 19:27:25
+134.122.88.190  2023-07-29 02:07:52 + 86400 = 2023-07-30 02:07:52
+193.35.18.169   2023-07-29 02:26:39 + 86400 = 2023-07-30 02:26:39
+170.64.187.84   2023-07-29 04:06:54 + 86400 = 2023-07-30 04:06:54
+159.203.46.152  2023-07-29 04:20:42 + 86400 = 2023-07-30 04:20:42
+45.129.14.64    2023-07-29 04:27:53 + 86400 = 2023-07-30 04:27:53
+5.187.112.81    2023-07-29 07:05:13 + 86400 = 2023-07-30 07:05:13
+116.110.84.51   2023-07-29 14:19:34 + 86400 = 2023-07-30 14:19:34
+45.128.232.71   2023-07-29 15:03:22 + 86400 = 2023-07-30 15:03:22
 ```
 
-Generate the hash of your password with htapassw.
+![jokerjail](https://media.giphy.com/media/LUaRXbQZZ6pWg/giphy.gif#center)
 
-And the dynamic configuration referencing the basic auth middleware
-```yaml
-Content of traefik_dynamic.yml
+Add NAT rules with port 22 on your router, so that you can ssh from the internet.
+
+I also activate ufw on the pi exposed to avoid traffic coming in on unexpected ports, even if I
+do not open them in the router, but it's a security.
+
+Install ufw with :
+
+```sh
+sudo apt install ufw
 ```
 
-Deploying this simple traefik proxy with a docker-compose file.
+Enable ssh before applying the firewall, otherwise you will make your Pi unreachable 😂:
 
-Fire up
+```sh
+sudo ufw allow ssh
+```
 
+![sawtree](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExajF1bjU3N3pkd3d0bWNidmtxZTRpYnYzcjRsYjM0NGRqbHdtZm1mbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/79fGuiZ2MeyYxwLINP/giphy.gif#center)
 
+Now enable the firewall :
 
-Deploy a Grafana dashboard with a docker compose, add some labels to configure routing and proxying with traefik, and you are good to go and hosting a Grafana Dashboard service behind it.
+```sh
+sudo ufw enable
+```
 
+### Reverse Proxy with Docker
+
+The use of traefik is very simple, all you have to do is to add proper lables on docker services,
+and traefik will watch upon the docker socket to know what to do. Very powerful and evolutive !
+
+Let's first create the docker network that will be used to communicate with other services :
+
+```sh
+docker network create pi
+```
+
+To enable Traefik, we first have to enable the docker service of traefik. To do so, instanciate
+the following docker-compose file :
+
+```yaml
+version: '3.4'
+services:
+  traefik:
+      image: 'traefik:2.3'
+          container_name: 'traefik'
+    restart: 'unless-stopped'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '8080:8080'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - './traefik/traefik.toml:/etc/traefik/traefik.toml:ro'
+      - './traefik/traefik_dynamic.toml:/traefik_dynamic.toml:ro'
+      - './ssl:/etc/ssl:ro'
+    networks:
+      - pi
+
+  whoami:
+    image: 'traefik/whoami'
+    restart: 'unless-stopped'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.whoami.rule=PathPrefix(`/whoami{regex:$$|/.*}`)'
+      - 'traefik.http.services.whoami.loadbalancer.server.port=80'
+      - 'traefik.http.routers.whoami.tls'
+    networks:
+      - pi
+
+networks:
+  pi:
+    external: true
+```
+
+Make use of 2 files, the static traefik configuration (including the enabling of logs,
+of dashboard and docker socket watching)
+
+Here is the content of the file to place under `traefik/traefik.toml` :
+
+```yaml
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+[api]
+  dashboard = true
+
+[providers.docker]
+  watch = true
+  network = "web"
+  exposedByDefault = false
+
+[providers.file]
+  filename = "traefik_dynamic.toml"
+
+[accessLog]
+```
+
+We define :
+
+- 2 entrypoints, upon the port 80 for simple HTTP protocol, and a HTTPS access on port 443
+- The activation of the cool traefik dashboard, reachable at [http://yoururl.com/dashboard/](),
+  (_NB: Be sure to add the last trailing slash after dashboard, otherwise
+  the dashboard is not accessible._)
+- The activation of docker socket watching, to add new services on the fly and to disable
+  docker exposure if not configured by lables (_better for security considerations_)
+- A dynamic configuration file `traefik_dynamic.toml`
+- The display of access log on the reverse proxy
+
+Great, the traefik serve now serve proxied services throught `websecure` and `web` entrypoints.
+Let's now secure the vizualization dashboard by generating and adding an htpass middleware in front
+of dashboard entrypoint :
+
+```sh
+sudo apt-get install apache2-utils
+```
+
+Generate a hash for your admin password, the result is displayed on stdout:
+
+```sh
+htpasswd -Bnb admin superpassword123
+```
+
+Here is the dynamic configuration referencing the basic auth middleware :
+
+```yaml
+[http.middlewares.simpleAuth.basicAuth]
+  users = [
+    "admin:$2y$05$fJ.OOvXhMrXSC4s6uDgtp.q320RmTyHQ7iuya90TKS./LXa5QoJue"
+  ]
+
+[http.routers]
+  [http.routers.unsecurerouter-api]
+    rule = "Host(`192.168.X.X`) || Host(`yoururl.fr`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    entrypoints = ["web"]
+    middlewares = ["simpleAuth"]
+    service = "api@internal"
+
+  [http.routers.securerouter-api]
+    rule = "Host(`192.168.X.X`) || Host(`yoururl.fr`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    entrypoints = ["websecure"]
+    middlewares = ["simpleAuth"]
+    service = "api@internal"
+    [http.routers.securerouter-api.tls]
+
+[[tls.certificates]]
+    certFile = "/etc/ssl/ssl-cert-snakeoil.pem"
+    keyFile = "/etc/ssl/ssl-cert-snakeoil.key"
+```
+
+We defined :
+
+- A middleware using the previously generated password for admin user
+- Some routers to redirect paths beginning by `/dashboard` to the traefik dashboard
+- A secure and an unsecure router, the secure ones are using certificates stored under `/etc/ssl`
+  (We will review review later on how to generate yours with Let's Encrypt)
+
+Let's fire up the traefik service, navigate to the docker-compose file, which reside alongside
+dynamic and static toml configuration files :
+
+```sh
+docker-compose up -di
+```
+
+Now navigate to your dashboard, at [http://yoururl/dashboard/]() and you should see this :
+
+![traefikdashboard](traefik.png)
+
+Well done, your proxy is working and ready to serve all your services!!
+
+![spongebobserver](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2phdm01cDB6ZHpvazIwZWxnajlvZTZwYXYzazE3bmRnbWVlbzYweSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKHW5ygEPHUNrb1SM/giphy.gif#center)
+
+### Setup Monitoring with Grafana
+
+Now let's deploy a Grafana dashboard with a docker compose, add some labels
+to configure routing and proxying with traefik,
+and you are good to go to monitor your server 24/24 7/7 without a pain.
+
+To do so, instanciate a `docker-compose.yml` file with a few services
+in a `monitoring` folder.
+
+Prepare some data folders (for persisting data accross reboots of your PI).
+
+```sh
+mkdir ~/monitoring && cd ~/monitoring && mkdir -p prometheus/data grafana/data && \
+sudo chown -R 472:472 grafana/ && \
+sudo chown -R 65534:65534 prometheus/
+```
+
+Here is the docker-compose file :
+
+```yml
+version: "3"
+services:
+  grafana:
+    container_name: monitoring-grafana
+    image: grafana/grafana:latest
+    hostname: rpi-grafana
+    restart: unless-stopped
+    user: "472"
+    networks:
+      - pi
+    expose:
+      - 3000
+    env_file:
+      - ./grafana/.env
+    volumes:
+      # /!\ To be modified depending on your needs /!\
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana{regex:$$|/.*}`)"
+      - "traefik.http.routers.grafana.tls"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.frontend.headers.customRequestHeaders=Authorization:-"
+      - "traefik.http.routers.grafana.middlewares=simpleAuth@file"
+
+  cadvisor:
+    container_name: monitoring-cadvisor
+    image: zcube/cadvisor:latest
+    hostname: rpi-cadvisor
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - pi
+    expose:
+      - 8080
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+
+  node-exporter:
+    container_name: monitoring-node-exporter
+    image: prom/node-exporter:latest
+    hostname: rpi-exporter
+    restart: unless-stopped
+    networks:
+      - pi
+    expose:
+      - 9100
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /:/host:ro,rslave
+
+  prometheus:
+    container_name: monitoring-prometheus
+    image: prom/prometheus:latest
+    hostname: rpi-prometheus
+    restart: unless-stopped
+    user: "nobody"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks:
+      - pi
+    expose:
+      - 9090
+    volumes:
+      # /!\ To be modified depending on your needs /!\
+      - ./prometheus/data:/prometheus
+      - ./prometheus:/etc/prometheus/
+    depends_on:
+      - cadvisor
+      - node-exporter
+    links:
+      - cadvisor:cadvisor
+      - node-exporter:node-exporter
+
+networks:
+  pi:
+    external: true
+```
+
+- **Prometheus** expose some system metrics from the RaspberryPI (CPU, RAM...)
+- **Node-exporter** send the data to monitoring system (grafana)
+- **Grafana** expose the data behind the traefik proxy
+- **cAdvisor** monitor containers exposed on the RaspberryPI
+
+_NB: Be sure to install a 64 bit version of Ubuntu otherwise some containers won't be available !_
+
+Fire up the stack :
+
+```sh
+docker-compose up -d
+```
+
+Now head to the grafana dashboard at [http://yoururl/grafana/]() and
+
+- Open another web browser tab and follow this url [Grafana.com Shared Dashboard]([https://grafana.com/grafana/dashboards/19275-raspberry-pi-docker-monitoring-vef/])
+- Click on `COPY ID to clipboard` or `Download JSON`
+- Head to your own dashboard at [http://yoururl/grafana/]() and click on `Import` under `Dashboard tab`
+  ![import](import.png)
+- Paste the ID and click on `Load` or `Upload JSON file` with the downloaded file
+- Click on `Load`
+
+Et voilà 🔥
+
+Now you should see this :
+![grafana1](grafana.png#center)
+![grafana2](grafana2.png#center)
+![grafana3](grafana3.png#center)
+
+Pretty cool, isn't it ? All your dockers are monitored and also your RaspberryPI !
+
+![gifhomer](https://media.giphy.com/media/3orieUe6ejxSFxYCXe/giphy.gif#center)
+
+### Deploy NextcloudPi
 
 Formatting the hard drive to use and create a mount profile in fstab to automount on desired location.
 
 Deploying Newtcloud with docker, with proper service linking.
 
-Making a DNS challenge with let's encrypt certbot from EFF in order to enable HTTPS features (pay extra attention with Firefox config, might blow head due to rewriting of URL and making use of automatic https) 
+Making a DNS challenge with let's encrypt certbot from EFF in order to enable HTTPS features (pay extra attention with Firefox config, might blow head due to rewriting of URL and making use of automatic https)
 
-Digital Ocean 
+Digital Ocean
+
+### Install Sync clients on Smartphones
 
 Install nextcloud client on Android devices (to host photos and Notes)
 
 Install Davx5 to sync calendars, tasks and contacts.
 
+### Setup a 3-2-1 backup strategy
+
 Rsync local backup TODO
 Monitor other HDD (sdb and SDC)
 Once a month, upload a copy Uptobox
+
+## Conclusion
 
 https://help.nextcloud.com/t/guide-to-getting-started-with-nextcloudpi-docker-in-2020/93396
 https://emilienfoissotte.fr:8443/index.php/apps/notes/note/3374?new
@@ -112,3 +605,5 @@ https://help.nextcloud.com/t/how-to-configure-lets-encrypt-with-closed-ports-80-
 
 https://help.nextcloud.com/t/how-to-get-started-with-ncp-docker/126081 (setup the HDD)
 
+https://www.howtoforge.com/backing-up-with-rsync-and-managing-previous-versions-history#local-and-remote
+https://framablog.org/2021/04/23/sauvegardez/

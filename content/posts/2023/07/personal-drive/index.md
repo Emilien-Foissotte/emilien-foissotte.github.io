@@ -574,6 +574,36 @@ Pretty cool, isn't it ? All your dockers are monitored and also your RaspberryPI
 
 ### Deploy NextcloudPi
 
+Now everything to host Nextcloud on your RaspberryPI is up and running, let's prepare your
+hard drive you are going to setup in order to use an additionnal external storage rather
+than the root volume of your pi.
+
+It's better to isolate storage purposes but it's not mandatory, you can store everything
+on the root volume if you prefer to do so.
+
+If you plan to use an external storage, follow along with me !
+
+First we need to identify the drive id we will format (do not mess up with other
+connected drive and be sure to be on your target system before applying anything!!)
+
+```sh
+lsblk
+```
+
+Here is an example of my setup with 2 hard drive (a 2 To one
+and a 500 Gb one) attached on my RaspberryPI (using )
+
+```txt
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+sda      8:0    0 465.8G  0 disk
+├─sda1   8:1    0   256M  0 part /boot/firmware
+└─sda2   8:2    0 465.5G  0 part /
+sdb      8:16   0   1.8T  0 disk
+└─sdb1   8:17   0   1.8T  0 part
+sdc      8:32   0 465.7G  0 disk
+└─sdc1   8:33   0 465.7G  0 part
+```
+
 Formatting the hard drive to use and create a mount profile in fstab to automount on desired location.
 
 Deploying Newtcloud with docker, with proper service linking.

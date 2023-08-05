@@ -1,10 +1,10 @@
 ---
 title: "Personal Drive"
 description: ""
-date: 2023-07-29T22:00:06+02:00
-publishDate: 2023-07-09T22:00:06+02:00
-draft: true
-tags: ["Software Engineering", "Raspberry Pi", "Docker"]
+date: 2023-08-06T01:24:11+02:00
+publishDate: 2023-08-06T01:24:11+02:00
+draft: true 
+tags: ["Software Engineering", "Raspberry Pi", "Docker", "Traefik", "SysAdmin"]
 ShowToc: true
 TocOpen: false
 ---
@@ -116,14 +116,18 @@ end
 
 It puts a little bit more pressure because it has to be more backed up than
 delegating it to Google, but I felt confident about setting this up (and
-[Uptobox](https://uptobox.com/) back me up in case my HDD at home burn or get in trouble.
+[Uptobox](https://uptobox.com/) back me up in case my HDD at home burn or get in trouble).
 
 This is the architecture I've come up to, I wanted it to be isolated with some
 dockers containers for the ease of deploy/redeploy, secure during connections
-and free (big thanks to Newtcloud team for the incredible work).
+and ultimately I wanted it to be totally free (big thanks to Newtcloud team for the incredible work).
 The backup will be made by sync local hard drives and store it on an Uptobox
-account. To monitor it, a Grafana dashboard will detail a little bit the system
-characteristics (CPU, RAM usage, filesystem usage of the Linux OS partition)..
+account (only incurring cost + DNS name, but it's a few
+euros per month and I would have used theses services anyway).
+
+To monitor the whole stack, a Grafana dashboard will detail a little bit the system
+characteristics (CPU, RAM usage, filesystem usage of the Linux OS partition,
+network traffic, docker uptimes)..
 
 Here is a little overview of components used :
 
@@ -178,7 +182,8 @@ we can move on into deploying the solution.
 
 ### Firewall
 
-First we need to secure your exposed raspberry pi with ufw and fail2ban.
+First we need to secure your exposed raspberry pi with [ufw](https://doc.ubuntu-fr.org/ufw) and
+[fail2ban](https://doc.ubuntu-fr.org/fail2ban).
 As the pi will be exposed to the internet, if you wish to access it in SSH,
 it is important to setup a good firewall to avoid brute force attacks, SSH fuzzers
 and all kind of scary stuff like that (do not worry, with a proper long password
@@ -257,7 +262,8 @@ Install ufw with :
 sudo apt install ufw
 ```
 
-Enable ssh before applying the firewall, otherwise you will make your Pi unreachable 😂:
+Enable ssh before applying the firewall, otherwise you will make your Pi unreachable
+remotely 😂:
 
 ```sh
 sudo ufw allow ssh
@@ -554,7 +560,7 @@ docker-compose up -d
 
 Now head to the grafana dashboard at [http://yoururl/grafana/]() and
 
-- Open another web browser tab and follow this url [Grafana.com Shared Dashboard]([https://grafana.com/grafana/dashboards/19275-raspberry-pi-docker-monitoring-vef/])
+- Open another web browser tab and follow this url [Grafana.com Shared Dashboard](https://grafana.com/grafana/dashboards/19275-raspberry-pi-docker-monitoring-vef/)
 - Click on `COPY ID to clipboard` or `Download JSON`
 - Head to your own dashboard at [http://yoururl/grafana/]() and click on `Import` under `Dashboard tab`
   ![import](import.png)
@@ -591,7 +597,11 @@ lsblk
 ```
 
 Here is an example of my setup with 2 hard drive (a 2 To one
-and a 500 Gb one) attached on my RaspberryPI (using )
+and a 500 Gb one) attached on my RaspberryPI (using this
+[powered USB hub](https://www.cdiscount.com/informatique/clavier-souris-webcam/atolla-hub-usb-3-0-alimente-adaptateur-usb-4-port/f-1070229-ato6974065410521.html)
+).
+
+![poweredusbhub](usbhub.png#center)
 
 ```txt
 NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
@@ -604,36 +614,266 @@ sdc      8:32   0 465.7G  0 disk
 └─sdc1   8:33   0 465.7G  0 part
 ```
 
-Formatting the hard drive to use and create a mount profile in fstab to automount on desired location.
+Let's now format the hard drive with a file system that allow users permissions and so on. 
+Be aware that everything on the hard drive will wiped out during the process !
 
-Deploying Newtcloud with docker, with proper service linking.
+An example here by formatting the partition on the third hard drive with ext4 
+(GNU/Linux filesystem)
 
-Making a DNS challenge with let's encrypt certbot from EFF in order to enable HTTPS features (pay extra attention with Firefox config, might blow head due to rewriting of URL and making use of automatic https)
+```sh
+sudo mkfs -t ext4 /dev/sdc1
+```
 
-Digital Ocean
+Now we will edit the `fstab`, e.g. we will indicate to the OS where each drive should be mounted.
+
+Identify the `UUID` of your formatted disk, by running this command :
+
+```sh
+lsblk -f
+```
+
+Edit the file to enter theses values, replacing the UUID and the target location to something explicit : 
+
+```txt
+UUID=THE-ADDRESS-GOES-HERE /mnt/directory/location ext4 defaults 0
+```
+
+Now you can mount the HDD (it will be done automatically at each startup and boot) :
+
+```sh
+fstab mount -a 
+```
+
+Change the ownership of the target location to the user that will be used by Nextcloud in the docker image :
+
+```sh
+sudo chown www-data:www-data -R /mnt/directory/location
+```
+
+Now, as one doesn't change a team that wins, let's setup another docker-compose file to fire up the Nextcloud stack.
+
+```yml
+version: "3.4"
+services:
+  nextcloud:
+        container_name: nextcloudpi
+            image: ownyourbits/nextcloudpi
+    ports:
+      - 8880:80
+      - 8443:443
+      - 4443:4443
+    volumes:
+      - '/media/backup2to/ncp/:/data'
+      - 'ssl/ssl-cert-snakeoil.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem:ro'
+      - 'ssl/ssl-cert-snakeoil.key:/etc/ssl/private/ssl-cert-snakeoil.key:ro'
+    restart: unless-stopped
+    command: 127.0.0.1
+```
+
+Where is traefik here ? It is not used as you can see because we are binding the port directly to the host, but not on the ports
+`80` and `443` so your webserver is available to host a ton of other services ! 
+
+Be sure to open theses ports in your NAT to let internet traffic go along the way. No need for filtering as everything is secure on your Owncloud stack.
+
+Retrieve admin password by running `ncp-config` inside the docker after you had `docker-compose up -d` the stack. 
+Take the opportunity also to allow your DNS name or local IP to the dashboard, otherwise you will be unable to reach it !
+
+Congratulations, you own your data from now, hosted at home !! 🎊
+
+![owndata](https://media.giphy.com/media/umbIrcUJbmuIUZ1e7M/giphy.gif#center)
+
+Everything is almost done, all we have left to do, is to make a DNS challenge in order to generate a wildcard SSL certificate. 
+You wouldn't transfer all your data, password, notes, agenda in plain unciphered connections ? Neither do I 😄 
+
+Let's go for enabling HTTPS on traefik and nextcloud !
+
+First, install certbot on your machine
+
+```sh
+sudo apt update
+sudo apt install certbot
+```
+
+Download the acme challenge script and make it executable :
+
+```sh
+wget https://github.com/joohoi/acme-dns-certbot-joohoi/raw/master/acme-dns-auth.py
+chmod +x acme-dns-auth.py
+```
+
+Edit the informations of the script to make it launchable using `python3`
+Move the script to certbot folder :
+
+```sh
+sudo mv acme-dns-auth.py /etc/letsencrypt/
+```
+
+Set up the acme-dns-certbot :
+
+```sh
+sudo certbot certonly --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --preferred-challenges dns --debug-challenges -d \*.your-domain -d your-domain
+```
+
+Be sure to substitue domain names and escaping the the asterix with the backslash !
+
+Look at the output, and add the proper CNAME entry in your DNS provider. 
+Example output : 
+
+```txt
+Output
+...
+Output from acme-dns-auth.py:
+Please add the following CNAME record to your main DNS zone:
+_acme-challenge.your-domain CNAME 12345678-9abc-def0-1234-56789abcdef0.auth.acme-dns.io.
+
+Waiting for verification...
+...
+```
+
+You should add `CNAME 12345678-9abc-def0-1234-56789abcdef0.auth.acme-dns.io` entry.
+
+Once ok the certbot will detect the dns change and generate the wildcard certificates.
+Copy the generated SSL private and public certificates along traefik (look at the docker-compose file) and nextcloud one.
+
+Make a folder `ssl` :
+
+```txt
+ssl
+├── ssl-cert-snakeoil.key
+└── ssl-cert-snakeoil.pem
+```
+
+Copy it next to docker-compose of traefik and nextcloud.
+
+Add this router to traefik dynamic configuration, in order to tell to traefik to serve this service under SSL.
+Traefik will also rewrite the URL in order to link to the good port, if you try to go to [yoururl/nextcloud]().
+
+```toml
+[http.middlewares]
+  [http.middlewares.redirectnextcloud.redirectRegex]
+    regex = "^http(s?)://yoururl.fr/nextcloud(.*)"
+    replacement = "https://yoururl.fr:8443"
+
+[http.routers]
+  [http.routers.nextcloud]
+    rule = "PathPrefix(`/nextcloud`)"
+    entrypoints = ["websecure"]
+    middlewares = ["redirectnextcloud"]
+    service = "nextcloud"
+    [http.routers.nextcloud.tls]
+
+[http.services]
+  [http.services.nextcloud.loadBalancer]
+    [http.services.nextcloud.loadBalancer.healthCheck]
+      path = "/"
+      scheme = "https"
+      hostname = "yoururl.fr"
+      port = "8443"
+
+```
+
+Your are now backed up by a secure encrypted SSL connection 😎
+
+![privacy](https://media.giphy.com/media/e7yNPQmGUozyU/giphy.gif#center)
 
 ### Install Sync clients on Smartphones
 
-Install nextcloud client on Android devices (to host photos and Notes)
+For convenient usage, you can install nextcloud client on Android devices to upload directly
+files and take notes (Drive and Keep replacement).
 
-Install Davx5 to sync calendars, tasks and contacts.
+here is the link for Android apps : 
+- [Nextcloud](https://play.google.com/store/apps/details?id=com.nextcloud.client&pli=1)
+- [Nextcloud Notes](https://play.google.com/store/apps/details?id=it.niedermann.owncloud.notes)
+
+To sync your calendar, tasks and contacts, you can use Davx5
+- [DAVX5 on Play Store](https://play.google.com/store/apps/details?id=at.bitfire.davdroid&referrer=utm_source%3Dhomepage)
+- [DAVX5 on FStore](https://f-droid.org/packages/at.bitfire.davdroid/)
+
+You can move around will all your data in your pocket and keep all your documents centralized at home.
+
+To setup clients, please follow [Davx5](https://www.davx5.com/tested-with/nextcloud) and 
+[Nextcloud](https://docs.nextcloud.com/server/latest/user_manual/fr/groupware/sync_android.html)
+documentation. Very efficient !
 
 ### Setup a 3-2-1 backup strategy
 
-Rsync local backup TODO
-Monitor other HDD (sdb and SDC)
-Once a month, upload a copy Uptobox
+![nightmare](https://media.giphy.com/media/l2JdTwp5NFtZq0MuY/giphy.gif#center)
+
+Now everything is at home be sure to backup you data efficiently, otherwise you would loose everything.
+Let's follow the 3-2-1 rule :
+- A backup on `3` differents locations
+- On `2` separate physical volumes
+- With at least `1` copy stored remotely (in case everything burns at home)
+
+Keep in mind that a real backup solution is a backup that is recoverable. Be sure to test your solution by trying to import
+backup time to time and check eveything is ok (very easy with docker compose, just instanciate a new one and change source volume).
+
+A simple solution is to rsync the content of the hard drive on another hard drive.
+
+```sh
+ sudo rsync -vlr --info=progress2 /media/principalstorage/ncp/ /media/storagebackup/ncp/
+```
+
+In case of hard drive failure, the other drive would contain your precious data.
+
+Once a month, upload a copy to Uptobox, in order to save data in another safe place.
+
+To do so, first zip the content of your data folder : 
+
+```sh
+zip -r backupnextcloud.zip /media/principalstorage/ncp/
+```
+
+Once zipped, it is ready to be shipped, using [uptobox-cli](https://github.com/vic-blt/uptobox-cli)
+_NB: Be sure to update nameserver for Cloudflare ones, as sometimes Uptobox is kicked out by french FAI_
+
+Setup the cli, install with `npm install` and fill `config.js` with proper credentials and set premium to `1`.
+
+Once done, upload your file 
+
+```sh
+node /home/pi/uptobox-cli/index.js uploadFiles backupnextcloud.zip
+```
 
 ## Conclusion
 
-https://help.nextcloud.com/t/guide-to-getting-started-with-nextcloudpi-docker-in-2020/93396
-https://emilienfoissotte.fr:8443/index.php/apps/notes/note/3374?new
+Congratulations, you have now a fully backed up system with your photos, documents, calendar, contacts stored at home.
 
-https://help.nextcloud.com/t/how-to-configure-lets-encrypt-with-closed-ports-80-and-443/126375 (copy locations)
+Furthermore, with traefik you can plug another services and expose them very easily on your server, just using some
+labels on your docker-compose services.
 
-https://help.nextcloud.com/t/how-to-configure-lets-encrypt-with-closed-ports-80-and-443/126375 (dns challenge)
+To conclude, Grafana dashboard help you monitor all your stack and ensure you are filling up your disks or getting low
+on RAM for instance.
 
-https://help.nextcloud.com/t/how-to-get-started-with-ncp-docker/126081 (setup the HDD)
+Be sure to regularly backup your data (give a go to [CRON jobs](https://doc.ubuntu-fr.org/cron), they will save some much time).
+As it is automatically done, just ensure that the job still work times to times, and try to do the recover exercice in case something
+goes wrong. As a free advice, I encourage you to save your docker-compose files in a VCS (private to do not expose hashs) system,
+like Github or Gitlab.
 
-https://www.howtoforge.com/backing-up-with-rsync-and-managing-previous-versions-history#local-and-remote
-https://framablog.org/2021/04/23/sauvegardez/
+Feel free to share with other of your household for them to create an account, they will be able to store their data and 
+you can share files with them. 
+
+Give a go to "Notes" app and to "memories", I find them amazing. You can install easily them from the admin dashboard
+in the `admin` account directly in Nextcloud.
+
+Feel free to share with me in comments your tips about backup or some other system you have found that are as cool
+as Nextcloud, I heard about CasaOS but I don't know if it's as good as Nextcloud or not. 
+
+See you soon, and thanks for your time. 
+
+
+
+### Some sources and refering links that helped me setting up this whole system. 
+
+Thank you to all developers that have shared advices and recommendations.
+
+- [Nextcloud Guide 2020](https://help.nextcloud.com/t/guide-to-getting-started-with-nextcloudpi-docker-in-2020/93396)
+
+- [Let's Encrypt and SSL certificates](https://help.nextcloud.com/t/how-to-configure-lets-encrypt-with-closed-ports-80-and-443/126375)
+
+- [Wildcard certificate](https://www.digitalocean.com/community/tutorials/how-to-acquire-a-let-s-encrypt-certificate-using-dns-validation-with-acme-dns-certbot-on-ubuntu-18-04)
+
+- [Official Guide NextcloudPI](https://help.nextcloud.com/t/how-to-get-started-with-ncp-docker/126081)
+
+- [Rsync guide](https://www.howtoforge.com/backing-up-with-rsync-and-managing-previous-versions-history#local-and-remote)
+- [3-2-1 Model](https://framablog.org/2021/04/23/sauvegardez/)

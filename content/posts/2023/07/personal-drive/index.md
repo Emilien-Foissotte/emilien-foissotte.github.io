@@ -1,9 +1,9 @@
 ---
 title: "Personal Drive"
 description: ""
-date: 2023-08-06T01:24:11+02:00
-publishDate: 2023-08-06T01:24:11+02:00
-draft: true 
+date: 2023-08-06T22:15:11+02:00
+publishDate: 2023-08-06T22:15:11+02:00
+draft:  false
 tags: ["Software Engineering", "Raspberry Pi", "Docker", "Traefik", "SysAdmin"]
 ShowToc: true
 TocOpen: false
@@ -678,6 +678,37 @@ Be sure to open theses ports in your NAT to let internet traffic go along the wa
 Retrieve admin password by running `ncp-config` inside the docker after you had `docker-compose up -d` the stack. 
 Take the opportunity also to allow your DNS name or local IP to the dashboard, otherwise you will be unable to reach it !
 
+Download data from Google Photos with [Google Takeout](https://support.google.com/accounts/answer/9666875?hl=fr).
+
+Dump the zip content in your Nextcloud data folder :
+
+```sh
+unzip 'takeout-yourzips-0*.zip' -d /media/backup2to/ncp/ncdata/data/yourusername/files/Photos/Takeout
+```
+
+Change again the ownership of the dumped photos :
+
+```sh
+sudo chown www-data:www-data -R /mnt/directory/location
+```
+
+
+Rescan the content of your files :
+```sh
+docker exec -u 33 -it sh -c /var/www/nextcloud/occ files:scan --all
+```
+
+If your are using the excellent Nextcloud app [Memories](https://memories.gallery/),
+regenerate EXIF metadata from your newly updated photos
+
+```sh
+docker exec -u 33 -it sh -c /var/www/nextcloud/occ memories:migrate-google-takeout
+```
+
+Here is a preview (blurred to keep a little bit of privacy) , so cool isn't it ? 
+
+![dashimage](NextcloudPi.png#center)
+
 Congratulations, you own your data from now, hosted at home !! 🎊
 
 ![owndata](https://media.giphy.com/media/umbIrcUJbmuIUZ1e7M/giphy.gif#center)
@@ -788,6 +819,9 @@ here is the link for Android apps :
 To sync your calendar, tasks and contacts, you can use Davx5
 - [DAVX5 on Play Store](https://play.google.com/store/apps/details?id=at.bitfire.davdroid&referrer=utm_source%3Dhomepage)
 - [DAVX5 on FStore](https://f-droid.org/packages/at.bitfire.davdroid/)
+
+To use and view photos as efficiently than on Google Photos App:
+- [Photos](https://play.google.com/store/apps/details?id=com.nkming.nc_photos)
 
 You can move around will all your data in your pocket and keep all your documents centralized at home.
 

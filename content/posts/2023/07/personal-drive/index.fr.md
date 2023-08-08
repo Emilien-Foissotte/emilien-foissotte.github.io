@@ -23,44 +23,49 @@ chez vous 🚀 !
 ## Intro
 
 Ma copine a fait récemment face à une situation très stressante, laissez moi vous expliquer
-brièvement la cause du problème 😬
+brièvement la cause du problème 🫣
 
 ![StressGif](https://media.giphy.com/media/17bvpzBFFQ5Xi/giphy.gif#center)
 
 Elle adore, tout comme moi, prendre un tas de photos durant ses voyages et immortaliser
 les moments de tous les jours. Par chance, Google a rendu possible avec son application Google Photo
 la sauvegarde et le partage massif de photos à des proches & amis, depuis son smartphone en un
-claquement de doigt !
+claquement de doigt ! 🤳
 
 Et bonus, à la clé, on peut même partager un album commun.
 Il faut le dire, c'est incroyable !
 
 {{<figure src="loulousinge.jpg" caption="Jolie photo d'un de nos dernier festival 🎶" >}}
 
-Néanmoins, plus le temps avançait, la quantité de photo a dépassé la limite gratuite, et
+Néanmoins, plus le temps avançait, et plus la quantité de photo approchait dangeureusement la limite
+maximale.. 💽
+
+Jusqu'au jour où la limite gratuite a été atteinte, mais
 face à cela nous n'avons pas trouvé acceptable de débourser quelques euros tous les mois pour ce
-service de stockage..
+service de stockage.. Que faire.. 📈
 
 (Encore plus quand on sait, venant du ML, qu'en donnant ces photos "gratuitement", on laisse à Google un très joli
-dataset de photos qui peut être ré-utilisé pour faire ô combien d'applications ML et CV..)
+dataset de photos qui peut être ré-utilisé pour faire ô combien d'applications ML) 😠
+
+Et le drame a continué.. 😬
 
 Et le pire dans tout cela, c'est qu'il n'y a pas d'isolation entre
-Drive, Photos et GMail !!
+Drive, Photos et GMail !! 😵
 
 Alors évidemment Google envoyait constamment des notifications sur
 le téléphone de ma conjointe, pour dire qu'il n'arrivait plus à recevoir les mails, faute d'espace.
 Imaginez la situation assez critique, quand on utilise cet email comme contact principal
-(pour réserver les billets de train et d'avion, pour son application bancaire, pour les factures...)
+(pour réserver les billets de train et d'avion, pour son application bancaire, pour les factures...) 📮
 
 _Dans la tête d'un nouvel email 📧 arrivant sur une boîte Gmail quasi-pleine_ 🤣 :
 ![DangerGif](https://media.giphy.com/media/55itGuoAJiZEEen9gg/giphy.gif#center)
 
 L'esprit "craftsmanship" qui sommeille en moi m'a susuré l'idée d'utiliser l'excellente
 Raspberry Pi (Ubuntu, 64 bits, 8 GB) que je possède déjà à la maison pour streamer Films&Séries( [Abonnement Plex](https://www.plex.tv/)
-solution incroyable, là aucun scrupule pour chaque € déboursé).
+solution incroyable, là aucun scrupule pour chaque € déboursé). 👨‍💻 
 
 La Raspberry Pi servira de serveur de stockage encore une fois, mais cette fois
-pour héberger photos et fichiers perso !
+pour héberger photos et fichiers perso ! 🦾
 
 Voici un petit schéma du système :
 {{<mermaid>}}
@@ -130,19 +135,20 @@ end
 
 Évidemment la pression est un peu plus grande sur le système, il faut avoir des sauvegardes plus régulières
 et ne plus déléguer cette tâche à Google (_grands pouvoirs, grandes responsabilités.._), mais je me sentais confiant et avais la soif d'apprendre
-à mettre ça en place.
-De plus, ([Uptobox](https://uptobox.com/) peut me sauver la mise au cas où mes
+à mettre ça en place. 
+
+De plus, mon stockage froid distant ([Uptobox](https://uptobox.com/) peut me sauver la mise au cas où mes
 HDD de la maison brûlaient ou venaient à être disfonctionnels.
 
 Voici l'architecture à laquelle je suis parvenu, le système doit être bien isolé de l'OS avec
 des conteneurs dockers pour la simplicité de déploiement/re-déploiement, des connections chiffrées avec
 le SSL et HTTPS et enfin le système devait être 100% gratuit (chaleureux remerciements à l'équipe de
-Nextcloud pour le travail incroyable).
+Nextcloud pour le travail incroyable). 💡
 
 La sauvegarde sera effectuée par synchronisation de disques durs locaux et stockée également sur mon
 stockage Uptobox (le seul potentiel poste de dépense, en + du nom DNS, mais c'est à peine quelques euros
-par mois et dans tous les cas j'aurais continué à pauyer pour ses services
-que j'utilise déjà).
+par mois et dans tous les cas j'aurais continué à payer pour ces services
+que j'utilise déjà). ⚙️
 
 Pour monitorer toute l'architecture, un dashboard Grafana viendrait lire les métriques systèmes
 régulièrement (CPU, RAM , espace disque restant, trafic réseau, docker uptimes)..

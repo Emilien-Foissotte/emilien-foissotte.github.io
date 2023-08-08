@@ -23,36 +23,43 @@ chez vous 🚀 !
 ## Intro
 
 Ma copine a fait récemment face à une situation très stressante, laissez moi vous expliquer
-birèvement la cause du problème 😬
+brièvement la cause du problème 😬
 
 ![StressGif](https://media.giphy.com/media/17bvpzBFFQ5Xi/giphy.gif#center)
 
 Elle adore, tout comme moi, prendre un tas de photos durant ses voyages et immortaliser
 les moments de tous les jours. Par chance, Google a rendu possible avec son application Google Photo
-la sauvegarde et le partage massif de ses photos à ses proches & amis, depuis son smartphone en un
-claquement de doigt ! Et bonus, à la clé, on peut même partagé un album commun.
+la sauvegarde et le partage massif de photos à des proches & amis, depuis son smartphone en un
+claquement de doigt !
+
+Et bonus, à la clé, on peut même partager un album commun.
 Il faut le dire, c'est incroyable !
 
 {{<figure src="loulousinge.jpg" caption="Jolie photo d'un de nos dernier festival 🎶" >}}
 
 Néanmoins, plus le temps avançait, la quantité de photo a dépassé la limite gratuite, et
 face à cela nous n'avons pas trouvé acceptable de débourser quelques euros tous les mois pour ce
-service (sutout quand on sait qu'en donnant ces photos "gratuitement", on laisse à Google un très joli
-dataset de photos qui peut être utilisé pour faire des applications ML et CV), afin d'augmenter
-la limite de stockage.
+service de stockage..
 
-Et le pire dans tout cela, c'est que comme il n'y a pas d'isolation entre
-Drive, Photos et GMail, alors Google envoyait constamment des notifications sur
-le téléphone, pour dire qu'il n'arrivait plus à recevoir les mails, faute d'espace.
-Cela rend la situation assez critique, quand on utilise cet email comme contact principal
-(pour réserver les billets de train et d'avion, pour son application bancaire, pour les factures)
+(Encore plus quand on sait, venant du ML, qu'en donnant ces photos "gratuitement", on laisse à Google un très joli
+dataset de photos qui peut être ré-utilisé pour faire ô combien d'applications ML et CV..)
+
+Et le pire dans tout cela, c'est qu'il n'y a pas d'isolation entre
+Drive, Photos et GMail !!
+
+Alors évidemment Google envoyait constamment des notifications sur
+le téléphone de ma conjointe, pour dire qu'il n'arrivait plus à recevoir les mails, faute d'espace.
+Imaginez la situation assez critique, quand on utilise cet email comme contact principal
+(pour réserver les billets de train et d'avion, pour son application bancaire, pour les factures...)
 
 _Dans la tête d'un nouvel email 📧 arrivant sur une boîte Gmail quasi-pleine_ 🤣 :
 ![DangerGif](https://media.giphy.com/media/55itGuoAJiZEEen9gg/giphy.gif#center)
 
-L'esprit "craftsmanship" m'a susuré l'idée d'utiliser l'excellente
-Raspberry Pi que je possède déjà à la maison pour streamer Films&Séries( [Abonnement Plex](https://www.plex.tv/)
-solution incroyable, là aucun scrupule pour chaque € déboursé), mais cette fois en
+L'esprit "craftsmanship" qui sommeille en moi m'a susuré l'idée d'utiliser l'excellente
+Raspberry Pi (Ubuntu, 64 bits, 8 GB) que je possède déjà à la maison pour streamer Films&Séries( [Abonnement Plex](https://www.plex.tv/)
+solution incroyable, là aucun scrupule pour chaque € déboursé).
+
+La Raspberry Pi servira de serveur de stockage encore une fois, mais cette fois
 pour héberger photos et fichiers perso !
 
 Voici un petit schéma du système :
@@ -122,14 +129,16 @@ end
 {{< /mermaid >}}
 
 Évidemment la pression est un peu plus grande sur le système, il faut avoir des sauvegardes plus régulières
-et ne pas déléguer cette charge à Google, mais je me sentais confiant et avais la soif d'apprendre
-à mettre ça en place. De plus, ([Uptobox](https://uptobox.com/) peut me sauver la mise au cas où mes
+et ne plus déléguer cette tâche à Google (_grands pouvoirs, grandes responsabilités.._), mais je me sentais confiant et avais la soif d'apprendre
+à mettre ça en place.
+De plus, ([Uptobox](https://uptobox.com/) peut me sauver la mise au cas où mes
 HDD de la maison brûlaient ou venaient à être disfonctionnels.
 
 Voici l'architecture à laquelle je suis parvenu, le système doit être bien isolé de l'OS avec
 des conteneurs dockers pour la simplicité de déploiement/re-déploiement, des connections chiffrées avec
 le SSL et HTTPS et enfin le système devait être 100% gratuit (chaleureux remerciements à l'équipe de
 Nextcloud pour le travail incroyable).
+
 La sauvegarde sera effectuée par synchronisation de disques durs locaux et stockée également sur mon
 stockage Uptobox (le seul potentiel poste de dépense, en + du nom DNS, mais c'est à peine quelques euros
 par mois et dans tous les cas j'aurais continué à pauyer pour ses services
@@ -147,7 +156,7 @@ Voici une liste des composants utilisés :
 - [Traefik](https://traefik.io/)
 
 Tous ces graphes ont été générés en utilisant [Structurizr](https://structurizr.com),
-dont voici l'architecture, exprimés dans le langage DSL de la modélisation C4 :
+dont voici l'architecture, exprimée dans le langage DSL de la modélisation C4 :
 
 ```txt
 workspace "NextCloudPi" "Home Personnal Storage System" {
@@ -196,6 +205,7 @@ exposée sur internet, avec [ufw](https://doc.ubuntu-fr.org/ufw) et
 [fail2ban](https://doc.ubuntu-fr.org/fail2ban).
 Comme notre pi sera directement accessible depuis internet (pour le confort d'un accès en SSH depuis l'
 extérieur en cas de besoin), il est important de mettre en place un bon pare-feu.
+
 En effet, il faut à tout prix éviter les attaques par bruteforce, les attaques de type "Fuzzers" et
 toutes les choses effrayantes qui peuvent atteindre votre Pi.
 (Ne craignez rien, avec un bon mot de passe et un banissement efficace des IPs incriminées
@@ -624,7 +634,7 @@ lsblk
 ```
 
 Voici un exemple de mon installation avec 2 HDD (un de 2 To et
-un autre de 500 Gb one) attaché à ma RaspberryPI qui tourne sur SSD (grâce à ce
+un autre de 500 Gb one) attachés à ma RaspberryPI qui tourne sur SSD (grâce à ce
 [powered USB hub](https://www.cdiscount.com/informatique/clavier-souris-webcam/atolla-hub-usb-3-0-alimente-adaptateur-usb-4-port/f-1070229-ato6974065410521.html)
 ).
 
@@ -645,7 +655,7 @@ On peut désormais formatter le disque dur avec un système de fichier prenant e
 les permissions utilisateurs etc..
 Attention, tout ce qui est présent sur le disque sera supprimé lors de la manipulation !
 
-Un exemple ici est en formattant la partition du disque avec le système de fichier ext4
+En exemple en formattant la partition du disque avec le système de fichier ext4
 (système de fichiers GNU/Linux)
 
 ```sh
@@ -669,7 +679,8 @@ UUID=THE-ADDRESS-GOES-HERE /mnt/directory/location ext4 defaults 0
 ```
 
 Maintenant vous pouvez monter le disque dur (cette opération est
-à faire uniquement là, cela fait automatiquement à chaque démarrage) :
+à faire uniquement maintenant,plus tard cela sera fait automatiquement à chaque démarrage
+de votre pi) :
 
 ```sh
 fstab mount -a
@@ -703,9 +714,9 @@ services:
     command: 127.0.0.1
 ```
 
-Mais, où est utilisé traefil ?
-Il n'y en a pas besoin car nous utilisons le port `80` et `4443` en binding directement sur l'hôte
-mais pas sur les `80` and `443`, donc votre server peut les utiliser
+Mais, où est utilisé traefik ?
+Il n'y en a pas besoin car nous utilisons le port `80` et `443` en binding directement sur l'hôte
+mais pas sur les `80` and `443`, donc votre serveur peut les utiliser
 pour Traefik et continuer à héberger des tonnes d'autres services !
 
 Pensez bien à ouvrir ces ports dans votre NAT pour autoriser le traffic depuis internet vers Traefik et NextcloudPi
@@ -737,7 +748,7 @@ docker exec -u 33 -it sh -c /var/www/nextcloud/occ files:scan --all
 ```
 
 Si vous utilisez l'excellent app Nextcloud [Memories](https://memories.gallery/),
-regenerez les métadata EXIF depuis vos nouvelles photos.
+regénérez les métadata EXIF depuis vos nouvelles photos.
 
 ```sh
 docker exec -u 33 -it sh -c /var/www/nextcloud/occ memories:migrate-google-takeout
@@ -874,7 +885,8 @@ et dispo dans votre poche à portée de main.
 
 Pour faire l'installation des clients et le lien avec le serveur, suivez cette doc [Davx5](https://www.davx5.com/tested-with/nextcloud) and
 [Nextcloud](https://docs.nextcloud.com/server/latest/user_manual/fr/groupware/sync_android.html)
-Très efficace !
+
+Pour m'en servir quotidiennement, je vous l'assure c'est très efficace !
 
 ### Mettre en place une stratégie de sauvegarde sur le modèle 3-2-1
 
@@ -890,7 +902,7 @@ Suivons la règle 3-2-1 :
 
 Gardez en tête qu'une véritable sauvegarde est une sauvegarde que l'on peut restaurer.
 Soyez sur de tester de temps à autre que vous arrivez à faire l'exercice de restauration et que
-tout se passe bien (avec un docker-compose annexe sur différnts ports, très très simple).
+tout se passe bien (avec un docker-compose annexe sur différents ports, très très simple).
 
 Une solution très simple est d'utiliser la solution de backup
 de `ncp-config` et de synchroniser le contenu produit vers un autre disque dur.
@@ -924,7 +936,7 @@ votre calendrier et vos contacts !
 En plus, avec Traefik, vous pouvez brancher n'importe quelle autre service sur le port `80` et `443` très
 facilement sur votre serveur, c'est l'histoire de quelques labels docker-compose.
 
-Pour conclure, Grafana vous permet de visualisation instantannément l'état de votre Raspberry Pi et de
+Pour conclure, Grafana vous permet de visualiser instantanément l'état de votre Raspberry Pi et de
 vos services conteneurisés, ainsi à tout moment vous savez si vous remplissez trop vos disques ou si un
 service sature votre mémoire RAM.
 
@@ -950,7 +962,9 @@ mais je ne connais pas et serais ravi d'avoir vos retours.
 
 À bientôt, et merci pour votre temps à me lire.
 
-### Des sources et liens qui m'ont aidé dans la mise en place du système.
+### Des sources et références annexes
+
+Ces liens qui m'ont bien aidé dans la mise en place du système...
 
 Un grand merci à tous les devs qui ont pu partager leurs astuces et recommendations !
 ❤️ à l'équipe de Nextcloud

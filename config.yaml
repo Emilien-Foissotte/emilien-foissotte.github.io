@@ -1,35 +1,61 @@
 baseURL: "https://emilien-foissotte.github.io/"
-languageCode: "en-us"
 title: "Blog | Émilien F. "
 theme: "PaperMod"
 paginate: 5
 enableRobotsTXT: true
 
+languages:
+  en:
+    languageName: ":uk:"
+    weight: 1
+    taxonomies:
+      category: categories
+      tag: tags
+    menu:
+      main:
+        - name: About Me
+          url: /me/
+          weight: 3
+        - name: Search
+          url: /search/
+          weight: 4
+        - name: Projects
+          url: https://www.datascienceportfol.io/EmilienFoissotte
+          weight: 5
+        - name: Posts
+          url: /archives/
+          weight: 6
+        - name: Tags
+          url: /tags/
+          weight: 7
+
+  fr:
+    languageName: ":fr:"
+    weight: 2
+    taxonomies:
+      category: FRcategories
+      tag: FRtags
+    menu:
+      main:
+        - name: À Propos
+          url: /fr/me/
+          weight: 3
+        - name: Recherche
+          url: /fr/search/
+          weight: 4
+        - name: Projets
+          url: https://www.datascienceportfol.io/EmilienFoissotte
+          weight: 5
+        - name: Posts
+          url: /archives/
+          weight: 6
+        - name: Catégories
+          url: /frtags/
+          weight: 7
+
 minify:
   disableXML: true
   minifyOutput: true
-
-menu:
-  main:
-    - name: About Me
-      url: /me/
-      weight: 4
-    - name: Search
-      url: /search/
-      weight: 4
-    - name: Projects
-      url: https://www.datascienceportfol.io/EmilienFoissotte
-      weight: 5
-    - name: Posts
-      url: /archives/
-      weight: 6
-    - name: Tags
-      url: /tags/
-      weight: 7
-
-taxonomies:
-  category: categories
-  tag: tags
 
 outputs:
   home:
@@ -67,7 +93,6 @@ params:
     favicon16x16: "/img/favicon-16x16.png"
     favicon32x32: "/img/favicon-32x32.png"
     apple_touch_icon: "/img/apple-touch-icon.png"
-  
 
   editPost:
     URL: "https://github.com/Emilien-Foissotte/emilien-foissotte.github.io/tree/main/content"
@@ -99,6 +124,9 @@ params:
       -
       Feel free to read some of my ML related ramblings about my worklife, but also other tech-adjacent items I've come accross working on side projects.
 
+      -
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
   socialIcons:
     - name: Github
       url: "https://github.com/Emilien-Foissotte"
@@ -106,6 +134,8 @@ params:
       url: "https://www.linkedin.com/in/emilien-foissotte44/"
     - name: RSS
       url: "https://emilien-foissotte.github.io/index.xml"
+    - name: LICENSE
+      url: "https://creativecommons.org/licenses/by-sa/4.0/"
 
   giscus:
     repo: emilien-foissotte/emilien-foissotte.github.io

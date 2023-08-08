@@ -689,7 +689,7 @@ unzip 'takeout-yourzips-0*.zip' -d /media/backup2to/ncp/ncdata/data/yourusername
 Change again the ownership of the dumped photos :
 
 ```sh
-sudo chown www-data:www-data -R /mnt/directory/location
+sudo chown www-data:www-data -R /mnt/directory/location/ncdata/data/
 ```
 
 
@@ -842,23 +842,19 @@ Let's follow the 3-2-1 rule :
 Keep in mind that a real backup solution is a backup that is recoverable. Be sure to test your solution by trying to import
 backup time to time and check eveything is ok (very easy with docker compose, just instanciate a new one and change source volume).
 
-A simple solution is to rsync the content of the hard drive on another hard drive.
+A simple solution is to use the `ncp-config` backup tool and to rsync
+the zipped content on the hard drive on another hard drive. It can be restored with `ncp-config` too.
 
 ```sh
- sudo rsync -vlr --info=progress2 /media/principalstorage/ncp/ /media/storagebackup/ncp/
+ sudo rsync -vlr --info=progress2 /media/principalstorage/ncp/backup.zip /media/storagebackup/ncp/backup.zip
 ```
 
 In case of hard drive failure, the other drive would contain your precious data.
 
 Once a month, upload a copy to Uptobox, in order to save data in another safe place.
 
-To do so, first zip the content of your data folder : 
 
-```sh
-zip -r backupnextcloud.zip /media/principalstorage/ncp/
-```
-
-Once zipped, it is ready to be shipped, using [uptobox-cli](https://github.com/vic-blt/uptobox-cli)
+Once the  zip produced, it is ready to be shipped, using [uptobox-cli](https://github.com/vic-blt/uptobox-cli)
 _NB: Be sure to update nameserver for Cloudflare ones, as sometimes Uptobox is kicked out by french FAI_
 
 Setup the cli, install with `npm install` and fill `config.js` with proper credentials and set premium to `1`.
@@ -900,6 +896,7 @@ See you soon, and thanks for your time.
 ### Some sources and refering links that helped me setting up this whole system. 
 
 Thank you to all developers that have shared advices and recommendations.
+❤️  to Nextcloud team
 
 - [Nextcloud Guide 2020](https://help.nextcloud.com/t/guide-to-getting-started-with-nextcloudpi-docker-in-2020/93396)
 

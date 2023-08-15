@@ -11,94 +11,126 @@ TocOpen: false
 
 # TL;DR
 
-This article goes throught all the details in order to explain how setup a blogfolio
-like this one
-- From article posting using simple Markdown syntax 🔤
-- To deployment on Github Pages 🚀, with Giscus comments on each articles 🗣️
-- To monitoring of engagement using Goatcounter 📶
+Cet article va balayer tous les aspects de la gestion d'un blog/portfolio comme
+celui que vous êtes en train de lire 
+- Depuis la manière d'écrire et de poster des articles avec de simples Markdown 🔤
+- En passant par le déploiement sur Github Pages 🚀, avec le système libre et intégré de
+de commentaires Giscus sous chaque article 🗣️
+- Et enfin le monitoring de l'engagement des posts et campagnes de publication, avec un outil libre
+également, Goatcounter 📶
 
-Keep reading for more !
+Plus de détails dans les prochains paragraphes !
 
 ## Introduction
 
-I'm currently starting this blogfolio to expose my work on the internet and to kick off some content on this blog about fun details I'v come accross exploring topics. It is basically a web hosted memo, but I hope it could help others tech-hobbyist exploring stuff too !
+Je commence ce blog/portfolio afin de partager mon travail sur Internet, et pour publier 
+du contenu à propos des découvertes marrantes que j'ai pu effectuer en explorant des sujets
+divers et variés qui pourraient intéresser d'autres personnes.
 
-To start a first with some technical details on this fresh new website, It might be a good start to
-deep dive under explaining how this website is generated, from creation to deployment.
+C'est donc grosso modo un memo hébergé sur le web, mais j'espère qu'il pourra
+aider de nombreux autres tech-hobbyist explorant diverses choses !
 
-The dilemna of 🥚 VS 🐔 remains but at least we could get details of how things are done. 😃
+Cela me semblait un bon début d'essayer d'expliquer un peu les ficelles techniques 
+qui permettent à ce tout nouveau site web d'exister sur la toile. 
 
-Let's go !
+Cela fera un bon point de départ à notre exploration technique, de regarder 
+un peu sous le capot comment se génère, se déploie et se surveille ce site web.
 
-## Making this kind of website - A simple HowTo
+Le dilemne entre l' 🥚 et la 🐔 reste entier, mais au moins nous allons
+voir un peu comment les choses se passent ! 😃
 
-This website is made public using the fancy tool of [Github Pages](https://pages.github.com/)
-and the behind the scenes are curated by [Hugo](https://gohugo.io/).
+Maintenant que tout a été dit, passons aux choses sérieuses..
 
-### Install Hugo
+## Lancer ce genre de site web - Un guide pour les "Nuls"
 
-The first setup of hugo is easy, install it following guidelines from previous website based on your OS.
+Ce site web statique est déployé sur la toile grâce au superbe outil [Github Pages](https://pages.github.com/)
+et derrière c'est le framework [Hugo](https://gohugo.io/) qui s'occupe de tout.
 
-For me, as I enjoy using an Ubuntu workstation :
+### Installer Hugo
+
+La mise en place d'hugo est sumple, il suffit de l'installer en suivant 
+les procédures décrites sur le site plus haut, en sélectionnant la bonne option selon 
+votre OS.
+
+Dans mon cas, ce sera la section relative à Ubuntu :
 
 ```sh
 sudo snap install hugo
 ```
 
-Create template for your new website 🚀, launching it with
+Passons à la création du template de notre site web 🚀, en lançant sa génération avec : 
 
 ```sh
 hugo new site <name of site> -f yml
 ```
 
-Make a fork of your favorite Hugo theme 🌟, and then add it as a submodule it under your theme folder
+Forkez votre thème Hugo favori 🌟, et ajoutez-le comme sous-module git, sous votre dossier `theme`
 
 ```sh
 git submodule add --depth=1 https://github.com/<yourGHuser>/hugo-PaperMod.git themes/PaperMod
 git submodule update --init --recursive
 ```
-Later, you can update layouts and customize the theme under your own repo in this git submodule.
 
-Finally add in `config.yml`:
+Plus tard, vous pourrez mettre à jour votre layout et customiser votre thème 
+grâce à votre propre repo de fork, en ajoutant les modifications dans ce module. 
+
+Pour terminer, ajouter à votre fichier `config.yml`:
+
+
 ```yaml
 theme: "PaperMod"
 ```
 
-Cutomize to your liking your blog :
-- Add a search and archive page
-- Add a presentation page
-- tweak the `assets/css/extended/themes-vars-override.css` to get a color palette at your liking
-- Modify options under `config.yml` to enable or disable features
+Customiser votre blogfolio selon votre envie :
+- Ajoutez une barre de recherche et d'archiv de vos posts 
+- Rédigez une page de présentation 
+- Modifiez `assets/css/extended/themes-vars-override.css` pour modifier la palette colorimétrique 
+et l'UX/UI selon vos goûts. 
+- Modifiez les options de `config.yml` pour activer/désactiver les fonctionnalités relatives
+à votre thème.
 
-**You would like to add some comment system ?**
-1. Create a "Discussions" category under your Github repository discussion tab. (Using "Announcements" is a good practice, as explained by <cite>Chris Wilson[^1]</cite>)
-[^1]: The "Announcements" category allows only Maintainers and Giscus Bot to create Discussions, which is better. Explained under this blog [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
-2. Have a look at [Giscus](https://giscus.app/), answer the configuration questions and then
-paste the script under `layouts/partials/comments.html`. Do not forget to set `comments: true` under `config.yml`
-3. Now you have a fancy comment system ! ![comments](comments_giscus.png#center)
+**Vous souhaiteriez que l'on puisse commenter sous vos posts ?**
+1. Créez une catégorie "Discussions" sous votre repository Github repository, dans l'onglet 
+discussions. (Utiliser les "Announcements" est une good practice, comme 
+l'explique à merveille <cite>Chris Wilson[^1]</cite>)
+[^1]: Cette catégorie "Announcements" permet aux Maintainers et au bot Giscus de créer des Discussions,
+ce qui est préférable. Plus de détails dans ce [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
+2.  Jetez un oeil à [Giscus](https://giscus.app/), répondez aux questions relatives à la configuration 
+et copiez le script généré sous `layouts/partials/comments.html`. N'oubliez pas de réglez `comments: true`
+sous le fichier `config.yml`
+3. Félicitations, vous avez désormais un superbe système de commentaires 
+![comments](comments_giscus.png#center)
 
 
 
-**What about a monitoring dashboard ?**
-1. Sign up at [Goatcounter.com](https://www.goatcounter.com/), and copy the code snippet under the file `layouts/extend_footer.html`
+**Vous aimeriez visualiser le traffic généré par votre site web ?**
+1. Inscrivez-vous sur [Goatcounter.com](https://www.goatcounter.com/),
+et copiez le snippet généré sous le fichier `layouts/extend_footer.html`
 
 ```html
 <script data-goatcounter="https://<yoursitename>.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 ```
-2. Go to your dashboard at [https://yoursitename.goatcounter.com](https://www.goatcounter.com/) and watch traffic incoming. If you do not see any peak, disable your adblocker.
-3. Now you can monitor the number of views of your posts ! ![dashboard](goatcounter_dashboard.png#center)
+2. Ouvrez un navigateur à l'adresse de votre dashboard à
+[https://yoursitename.goatcounter.com](https://www.goatcounter.com/) et observez le traffic généré
+par votre propre navigation. Si vous ne voyez rien, pensez à désactiver votre Ad-blocker.
+3. Vous pouvez mainteant voir le nimbre de vues de chacunes de vos pages et de vos posts !
+![dashboard](goatcounter_dashboard.png#center)
 
 
 
-### Create some content
+### Publiez du contenu
 
-I will organize my posts under a folder, split per year and month as it is displayed under archive page.
+Je vais, dans un souci d'organisation, gérer un post par dossier, 
+en séparant les dossiers par années et par mois, comme vous pouvez le constater sous 
+la page d'archive.
 ![content](content_folder.png)
 
-To quickly kick-off content use this script under `script` folder. Inspired from <cite> Nicholas Gilbert[^2]</cite>
+Pour générer rapidement un nouveau squelette de post, nous allons générer un script
+sous le dossier `script`. Cette pratique est inspirée de <cite> Nicholas Gilbert[^2]</cite>
 
-[^2]: The script is made by Nicholas Gilbert and exposed in his excellent [article](https://gilbertdev.net/posts/2023/02/enter-automation/).
+[^2]: Ce script est dérivé de celui effectué par Nicholas Gilbert et détaillé dans cet 
+excellent [article](https://gilbertdev.net/posts/2023/02/enter-automation/).
 
 ```bash
 #!/bin/bash
@@ -108,21 +140,25 @@ printf -v month '%(%m)T' -1
 hugo new --kind post posts/$year/$month/$1/index.md
 ```
 
-So basically, next time you see a new blog post, it's just a markdown containing notes
-samples, which is commited on my personnal repo on [Github](https://github.com/Emilien-Foissotte/emilien-foissotte.github.io).
+Donc, pour revenir à la base, la prochaine fois que vous lirez 
+du contenu sur ce site web, rappelez vous que ce ne sont 
+que de simples fichiers Markdown contenant des notes et guides de mise en page
+puis tout simplement versés sur mon repository personnel, sur [Github](https://github.com/Emilien-Foissotte/emilien-foissotte.github.io).
 
-I can trigger an new post writing with this command
+Nous pouvons donc débuter l'écriture d'un nouvel article avec ce script : 
 
 ```sh
 ./scripts/make-post.sh new-fancy-idea
 ```
 
-### Deploy to your new website
+### Le déploiement de votre nouveau site
 
-Each time a commit reach `main`
-branch, Github Action trigger some pipelines to build and deploy it.
+Pour chaque commit sur la branche `main`, Github Action
+déclenche un pipeline pour construire et déployer les pages statiques 
+du site web Hugo.
 
-You can see all details about the various step under `.github/workflows/hugo.yaml`
+Vous pouvez étudier en détails les différentes étapes 
+dans le fichier au format YAML `.github/workflows/hugo.yaml`
 
 ```yaml {linenos=true}
 # Sample workflow for building and deploying a Hugo site to GitHub Pages
@@ -204,21 +240,25 @@ jobs:
         uses: actions/deploy-pages@v1
 ```
 
-Basically Github will handle :
+De manière simplifiée, Github se charge de :
 
-1. Build the static sites using job at line 31, generating pages for each article.
-2. Deploy it using GitHub Pages environment, using job definition at line 68.
+1. Générer les pages statiques avec le job ligne 31, en créant les pages de chaque article.
+2. Déployer le tout en utilisant l'environnement GitHub Pages , avec le job ligne 68.
 
 ## Conclusion
 
-Hugo is a pretty fun framework to use, and well integrated with Github and other tools.
-Basically writing some contents is just about kicking-off some Markdown which make the
-release cycle so simple !
+Hugo est un framework très facile d'utilisation, dont l'ergonomie n'a rien à envier 
+à d'autres framework. Il a le luxe d'être intégré à merveille dans l'écosystème 
+Github et les différents outils qui le composent.
+Désormais, publier des notes de blog revient, de votre point de vue, à ne générer que 
+quelques notes Markdown, ce qui rend la chose enfantine en terme d'utilisation !
 
-If you wish to record you blog under other Open Source ones, not hosted under a private
-solution like Medium or Substack, go to [diff.blog](https://diff.blog/)  
+Si vous souhaitez enregistrer votre blog dans un aggrégateur Open Source, qui n'est pas un 
+hébergeur privé comme Medium ou Substack jetez un oeil à [diff.blog](https://diff.blog/)  
 
-Thanks to all other bloggers for exposing their works, it makes life so much easier but doesn't trade off
-under the Open Sourceness of solutions.
+De chaleureux remerciements à tous les 
+autres bloggeurs qui publient à propos de leurs projets, 
+cela rend la vie tellement plus simple, tout en réussissant à ne pas faire l'impasse sur 
+les aspects "logiciel" libre et le respect de la vie privée des outils développés. 
 
-Happy to see other Open Source and Ad free blog around 😊
+Toujours plaisant de vous des blogs Open Source et dénués de toute publicité sur la toile ! 😊

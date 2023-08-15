@@ -7,33 +7,32 @@ ShowToc: true
 TocOpen: false
 ---
 
-# TRADUCTION EN COURS
-
 # TL;DR
 
 Cet article va balayer tous les aspects de la gestion d'un blog/portfolio comme
-celui que vous êtes en train de lire 
+celui que vous êtes en train de lire
+
 - Depuis la manière d'écrire et de poster des articles avec de simples Markdown 🔤
 - En passant par le déploiement sur Github Pages 🚀, avec le système libre et intégré de
-de commentaires Giscus sous chaque article 🗣️
+  de commentaires Giscus sous chaque article 🗣️
 - Et enfin le monitoring de l'engagement des posts et campagnes de publication, avec un outil libre
-également, Goatcounter 📶
+  également, Goatcounter 📶
 
 Plus de détails dans les prochains paragraphes !
 
 ## Introduction
 
-Je commence ce blog/portfolio afin de partager mon travail sur Internet, et pour publier 
+Je commence ce blog/portfolio afin de partager mon travail sur Internet, et pour publier
 du contenu à propos des découvertes marrantes que j'ai pu effectuer en explorant des sujets
 divers et variés qui pourraient intéresser d'autres personnes.
 
 C'est donc grosso modo un memo hébergé sur le web, mais j'espère qu'il pourra
 aider de nombreux autres tech-hobbyist explorant diverses choses !
 
-Cela me semblait un bon début d'essayer d'expliquer un peu les ficelles techniques 
-qui permettent à ce tout nouveau site web d'exister sur la toile. 
+Cela me semblait un bon début d'essayer d'expliquer un peu les ficelles techniques
+qui permettent à ce tout nouveau site web d'exister sur la toile.
 
-Cela fera un bon point de départ à notre exploration technique, de regarder 
+Cela fera un bon point de départ à notre exploration technique, de regarder
 un peu sous le capot comment se génère, se déploie et se surveille ce site web.
 
 Le dilemne entre l' 🥚 et la 🐔 reste entier, mais au moins nous allons
@@ -48,8 +47,8 @@ et derrière c'est le framework [Hugo](https://gohugo.io/) qui s'occupe de tout.
 
 ### Installer Hugo
 
-La mise en place d'hugo est sumple, il suffit de l'installer en suivant 
-les procédures décrites sur le site plus haut, en sélectionnant la bonne option selon 
+La mise en place d'hugo est sumple, il suffit de l'installer en suivant
+les procédures décrites sur le site plus haut, en sélectionnant la bonne option selon
 votre OS.
 
 Dans mon cas, ce sera la section relative à Ubuntu :
@@ -58,7 +57,7 @@ Dans mon cas, ce sera la section relative à Ubuntu :
 sudo snap install hugo
 ```
 
-Passons à la création du template de notre site web 🚀, en lançant sa génération avec : 
+Passons à la création du template de notre site web 🚀, en lançant sa génération avec :
 
 ```sh
 hugo new site <name of site> -f yml
@@ -71,66 +70,69 @@ git submodule add --depth=1 https://github.com/<yourGHuser>/hugo-PaperMod.git th
 git submodule update --init --recursive
 ```
 
-Plus tard, vous pourrez mettre à jour votre layout et customiser votre thème 
-grâce à votre propre repo de fork, en ajoutant les modifications dans ce module. 
+Plus tard, vous pourrez mettre à jour votre layout et customiser votre thème
+grâce à votre propre repo de fork, en ajoutant les modifications dans ce module.
 
 Pour terminer, ajouter à votre fichier `config.yml`:
-
 
 ```yaml
 theme: "PaperMod"
 ```
 
 Customiser votre blogfolio selon votre envie :
-- Ajoutez une barre de recherche et d'archiv de vos posts 
-- Rédigez une page de présentation 
-- Modifiez `assets/css/extended/themes-vars-override.css` pour modifier la palette colorimétrique 
-et l'UX/UI selon vos goûts. 
+
+- Ajoutez une barre de recherche et d'archiv de vos posts
+- Rédigez une page de présentation
+- Modifiez `assets/css/extended/themes-vars-override.css` pour modifier la palette colorimétrique
+  et l'UX/UI selon vos goûts.
 - Modifiez les options de `config.yml` pour activer/désactiver les fonctionnalités relatives
-à votre thème.
+  à votre thème.
 
 **Vous souhaiteriez que l'on puisse commenter sous vos posts ?**
-1. Créez une catégorie "Discussions" sous votre repository Github repository, dans l'onglet 
-discussions. (Utiliser les "Announcements" est une good practice, comme 
-l'explique à merveille <cite>Chris Wilson[^1]</cite>)
-[^1]: Cette catégorie "Announcements" permet aux Maintainers et au bot Giscus de créer des Discussions,
-ce qui est préférable. Plus de détails dans ce [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
-2.  Jetez un oeil à [Giscus](https://giscus.app/), répondez aux questions relatives à la configuration 
-et copiez le script généré sous `layouts/partials/comments.html`. N'oubliez pas de réglez `comments: true`
-sous le fichier `config.yml`
-3. Félicitations, vous avez désormais un superbe système de commentaires 
-![comments](comments_giscus.png#center)
 
-
+1. Créez une catégorie "Discussions" sous votre repository Github repository, dans l'onglet
+   discussions. (Utiliser les "Announcements" est une good practice, comme
+   l'explique à merveille <cite>Chris Wilson[^1]</cite>)
+   [^1]: Cette catégorie "Announcements" permet aux Maintainers et au bot Giscus de créer des Discussions,
+   ce qui est préférable. Plus de détails dans ce [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
+2. Jetez un oeil à [Giscus](https://giscus.app/), répondez aux questions relatives à la configuration
+   et copiez le script généré sous `layouts/partials/comments.html`. N'oubliez pas de réglez `comments: true`
+   sous le fichier `config.yml`
+3. Félicitations, vous avez désormais un superbe système de commentaires
+   ![comments](comments_giscus.png#center)
 
 **Vous aimeriez visualiser le traffic généré par votre site web ?**
+
 1. Inscrivez-vous sur [Goatcounter.com](https://www.goatcounter.com/),
-et copiez le snippet généré sous le fichier `layouts/extend_footer.html`
+   et copiez le snippet généré sous le fichier `layouts/extend_footer.html`
 
 ```html
-<script data-goatcounter="https://<yoursitename>.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<script
+  data-goatcounter="https://<yoursitename>.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"
+></script>
 ```
+
 2. Ouvrez un navigateur à l'adresse de votre dashboard à
-[https://yoursitename.goatcounter.com](https://www.goatcounter.com/) et observez le traffic généré
-par votre propre navigation. Si vous ne voyez rien, pensez à désactiver votre Ad-blocker.
+   [https://yoursitename.goatcounter.com](https://www.goatcounter.com/) et observez le traffic généré
+   par votre propre navigation. Si vous ne voyez rien, pensez à désactiver votre Ad-blocker.
 3. Vous pouvez mainteant voir le nimbre de vues de chacunes de vos pages et de vos posts !
-![dashboard](goatcounter_dashboard.png#center)
-
-
+   ![dashboard](goatcounter_dashboard.png#center)
 
 ### Publiez du contenu
 
-Je vais, dans un souci d'organisation, gérer un post par dossier, 
-en séparant les dossiers par années et par mois, comme vous pouvez le constater sous 
+Je vais, dans un souci d'organisation, gérer un post par dossier,
+en séparant les dossiers par années et par mois, comme vous pouvez le constater sous
 la page d'archive.
 ![content](content_folder.png)
 
 Pour générer rapidement un nouveau squelette de post, nous allons générer un script
 sous le dossier `script`. Cette pratique est inspirée de <cite> Nicholas Gilbert[^2]</cite>
 
-[^2]: Ce script est dérivé de celui effectué par Nicholas Gilbert et détaillé dans cet 
-excellent [article](https://gilbertdev.net/posts/2023/02/enter-automation/).
+[^2]:
+    Ce script est dérivé de celui effectué par Nicholas Gilbert et détaillé dans cet
+    excellent [article](https://gilbertdev.net/posts/2023/02/enter-automation/).
 
 ```bash
 #!/bin/bash
@@ -140,12 +142,12 @@ printf -v month '%(%m)T' -1
 hugo new --kind post posts/$year/$month/$1/index.md
 ```
 
-Donc, pour revenir à la base, la prochaine fois que vous lirez 
-du contenu sur ce site web, rappelez vous que ce ne sont 
+Donc, pour revenir à la base, la prochaine fois que vous lirez
+du contenu sur ce site web, rappelez vous que ce ne sont
 que de simples fichiers Markdown contenant des notes et guides de mise en page
 puis tout simplement versés sur mon repository personnel, sur [Github](https://github.com/Emilien-Foissotte/emilien-foissotte.github.io).
 
-Nous pouvons donc débuter l'écriture d'un nouvel article avec ce script : 
+Nous pouvons donc débuter l'écriture d'un nouvel article avec ce script :
 
 ```sh
 ./scripts/make-post.sh new-fancy-idea
@@ -154,10 +156,10 @@ Nous pouvons donc débuter l'écriture d'un nouvel article avec ce script :
 ### Le déploiement de votre nouveau site
 
 Pour chaque commit sur la branche `main`, Github Action
-déclenche un pipeline pour construire et déployer les pages statiques 
+déclenche un pipeline pour construire et déployer les pages statiques
 du site web Hugo.
 
-Vous pouvez étudier en détails les différentes étapes 
+Vous pouvez étudier en détails les différentes étapes
 dans le fichier au format YAML `.github/workflows/hugo.yaml`
 
 ```yaml {linenos=true}
@@ -247,18 +249,18 @@ De manière simplifiée, Github se charge de :
 
 ## Conclusion
 
-Hugo est un framework très facile d'utilisation, dont l'ergonomie n'a rien à envier 
-à d'autres framework. Il a le luxe d'être intégré à merveille dans l'écosystème 
+Hugo est un framework très facile d'utilisation, dont l'ergonomie n'a rien à envier
+à d'autres framework. Il a le luxe d'être intégré à merveille dans l'écosystème
 Github et les différents outils qui le composent.
-Désormais, publier des notes de blog revient, de votre point de vue, à ne générer que 
+Désormais, publier des notes de blog revient, de votre point de vue, à ne générer que
 quelques notes Markdown, ce qui rend la chose enfantine en terme d'utilisation !
 
-Si vous souhaitez enregistrer votre blog dans un aggrégateur Open Source, qui n'est pas un 
-hébergeur privé comme Medium ou Substack jetez un oeil à [diff.blog](https://diff.blog/)  
+Si vous souhaitez enregistrer votre blog dans un aggrégateur Open Source, qui n'est pas un
+hébergeur privé comme Medium ou Substack jetez un oeil à [diff.blog](https://diff.blog/)
 
-De chaleureux remerciements à tous les 
-autres bloggeurs qui publient à propos de leurs projets, 
-cela rend la vie tellement plus simple, tout en réussissant à ne pas faire l'impasse sur 
-les aspects "logiciel" libre et le respect de la vie privée des outils développés. 
+De chaleureux remerciements à tous les
+autres bloggeurs qui publient à propos de leurs projets,
+cela rend la vie tellement plus simple, tout en réussissant à ne pas faire l'impasse sur
+les aspects "logiciel" libre et le respect de la vie privée des outils développés.
 
 Toujours plaisant de vous des blogs Open Source et dénués de toute publicité sur la toile ! 😊

@@ -728,7 +728,7 @@ pour Traefik et continuer à héberger des tonnes d'autres services !
 Pensez bien à ouvrir ces ports dans votre NAT pour autoriser le traffic depuis internet vers Traefik et NextcloudPi
 Pas besoin de filtre ici, tout est sécurisé par votre stack Nextcloud et Traefik.
 
-Récupérez le mot de pass d'administration avec la commande `ncp-config` dans votre docker après
+Récupérez le mot de passe d'administration avec la commande `ncp-config` dans votre docker après
 votre `docker-compose up -d` sur la stack.
 Prenez le temps d'ajouter aussi votre nom de domaine DNS ou votre IP locale au dashboard,
 dans `trusted-domains` sinon vous ne pourrez pas y accéder !

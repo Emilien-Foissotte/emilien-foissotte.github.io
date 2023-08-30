@@ -13,75 +13,136 @@ TocOpen: false
 
 # TL;DR
 
-This blogpost deep dive around setting up a Unix based workstation and how craft a portable and ergonomic but efficient IDE.
-We will cover
+Ce billet de blog va couvrir différents aspects de la mise
+en place d'une station de développement Unix, et comment se construire son propre
+setup ultra-ergonomique et OS-transversal (pour MacOS et tout un tas de distributions Linux)
 
-- Crafting your terminal multiplexer tmux to mix and split windows as fast as a 10 handed guy 💻
-- Move around code and software repos in a glimpse with nvim, using completions as smart as VSCode ones ⌨️
-- Linking the previous tool and deploy codespaces on your own workstation, and add your favorites plugins ⚙️
+Nous verrons :
 
-Feel free to add your own customizations or hacks in comments. 😃
+- Comment fabriquer un terminal multiplexer, tmux et comment faire danser les fenêtres de déveleppment tel un
+  majestueux ballet, à la vitesse de l'éclaire 💻
+- Se déplacer entrre les lignes de code et les repos d'un claquement de doigt (pressement d'une touche
+  pour être précis ^^) avec nvim, tout en bénéficiant de complémentions faisant rougir ChatGPT ⌨️
+- Faire fusionner les deux-outils et déployer des codespaces sur votre station, en y incluant vos plugins
+  favoris ⚙️
 
-Hey, you want to know how setup a comment system like this one, below the post ? Checkout my previous post [here](/posts/2023//02/bootstrapping-website/)
+N'hésitez pas à partager vos propres hacks de customisation en commentaires, ne
+soyez pas avares de conseils 😃
 
-Let's go !
+Ce super système de commentaires vous intrigue ?
+Allez jeter un oeil à mon précédent post pour en savoir plus [ici](/posts/2023//02/bootstrapping-website/)
+
+C'est parti, passons aux choses sérieuses !
 
 ## Introduction
 
-Developping and coding software takes place as my main activity when I'm at work but also when I'm behing a computer screen. In order to interact with code, as a beginner, I've been using pre-built GUI IDE, like VSCode, Spyder, which were fine at the time.
+Développer des outils et des apps est l'une de mes principales activités au boulot,
+mais aussi quand je suis quand je suis les mains sur un clavier.
+
+Pour intéragir avec mes lignes de codes, quand j'étais un pur débutant, j'utilisais naturellement
+des IDE "batteries-included" avec des interfaces graphiques fenêtrées comme VSCode, Spyder, que
+je trouve très bien et correspondait parfaitement à l'usage que je pouvais faire des mes éditeurs.
 
 ![GUI-IDE](spyder.png#center)
 
-Later, seeking for customization of my workflow, I had my hands on Atom. Unfortunately, Atom has been shut down by Microsoft in order to focus on VSCode.
+Plus tard, quand j'ai cherché à maximiser et customiser mon workflow, je suis tombé sur Atom
+qui permettait un degré de customisation assez indécent. Malheureusement, suite au rachat par
+Microsoft et à la position naturellement indésirable de concurrent à VSCode, il a été décidé d'arrêter
+le projet, pour dédier les équipes de Microsoft à 100% à VS.
 
-Hence, this event pushed me in looking down for the best tool in place with the perfect trade-off betwenn ergonomy and efficiency. So, a few weeks ago, I decided to give a try to terminal based IDE (like Nano, Vim..), which makes them also perfect to develop on central server without any desktop environment.
+Alors, ce tragique épisode pour Atom m'a poussé à chercher de nouveaux outils, et
+sortir de ma zone de confort pour commencer à escalader une nouvelle courbe d'apprentissage,
+dans le but d'atteindre l'équilibre idéal entre ergonomie et efficacité.
+
+Il y a donc quelques semaines de cela, j'ai décidé de me lancer dans l'essai d'IDE
+basé sur l'utilisation du terminal uniquement ( comme Nano ou Vi(m) ).
+
+Ce choix d'IDE basés uniquement sur un terminal fait tout à fait sens également
+dans mon job de tout les jours, où je passe pas mal de temps à développer sur un serveur
+central sans environnement de bureau. (et j'avais déjà eu vent de VSCode en version
+remote mais je n'ai pas été convaincu à 100%).
 
 ![nvim-IDE](neovim.png#center)
 
-As an MLOps Engineer, when I'm focused on Data Engineering and ETL debugging stuff, It's a situation I encounter very often.
+En tant qu'MLOps, avec une partie des tâches qui m'incombent
+touchant fortemment au backend et aux aspects DevOps de la chaîne de traitement ML
+quand je suis en train de bosser sur des aspects Data Engineering/ETL
+c'est le genre de situation assez typique.
 
-## Crafting your own way of arranging and browsing through windows and panes
+## Fabriquez un multiplexeur à votre image, pour joueur du bout des doigts avec les fenêtres
 
-### A Terminal Multiplexer at the rescue, tmux
+### Un Multiplexeur de terminal à la rescousse , tmux
 
-The first step is to install a _terminal multiplexer_.
+La toute première des étapes est d'installer un _terminal multiplexeur_.
 
-What is a **terminal multiplexer** ? It's a very fancy tool which, in a simple way of explaining it, allows you to handle multiple windows, multiple sessions, using a single connection to your machine.
+Mais c'est quoi un **terminal multiplexeur** ?
 
-Let's take an example.
-You are developping a new database to store some data. You are developping the script on a server where your database is installed. Once you've edited everything, you would have to open a new connection to server to launch script ?
+C'est un outil super pratique, qui permet, de manière schématique pour expliquer brièvement,
+de gérer de multiples fenêtres à la fois, de multiples sessions,
+tout en utilisant une simple connexion avec votre kernel.
 
-No, it's not very convenient.
+Prenons un exemple pour clarifier un peu les choses.
+Vous développez sur une nouvelle version de la base de données
+qui permet de stocker une donnée quelconque.
+Vous développez donc un script sur le serveur où votre base de données réside, ce script
+permettant d'effectuer quelques tests.
 
-And, do you want to get a bonus ? It can save workspaces and sessions accross machines restart. So damn usefull in our way too mcuch multitasked lives, it's so mental load saving.
+Quand vous avez fini d'éditez votre script vous lancez une nouvelle connexion vers le serveur
+pour lancer le script ? Vous bossez avec plusieurs connection en parallèle ? Et si le réseau est
+instable, vous perdez votre session et le long job de test sur la DB ?
 
-#### Installing the tool
+Bof hein, le setup est pas optimal, c'est rien de le dire.
 
-First, that's at your desire but I love terminal that are a key away from being accessible. So at the beginning I was extensively using Gnome Terminal, with a _CTRL + T_ as shortcuts, but I was ending with dozens of windows open, it was a mess.
+Et vous voulez un super bonus ? Tmux peut sauvegarde vos
+différentes sessions de travail et vous les restaurer de manière
+transparente après un re-démarrage.
 
-As a fancier replacement, I use a drop down terminal, [Guake](http://guake-project.org/index.html). It is enabled whenever I press _F12_, in full screen. So cool, no more messy terminal (and as bonus, it is slightly transparent, so damn ergonomic when you want read some important man page whilst firing up some code).
+Extrêmement utile dans nos
+vies beaucoup trop multitâches, tellement mentalement boostant par la charge que ça libère
+et ça libère aussi du stress de perdre du boulot en cas de crash sauvage de son ordinateur.
+
+J'ai enfin remords à éteindre mon ordinateur en fin de journée de boulot.
+
+#### Installation de l'outil
+
+En toute première étape, c'est vous qui décisez sur ce point
+mais en toute subjectivité j'adore avoir un terminal à portée de touche ("hotkey").
+Au début j'utilisais à outrance les terminaux Gnome, avec des _CTRL + T_ dans tous les sens,
+mais je me retrouvais souvent au bout de quelques temps avec des dizaines de fenêtres
+ouvertes, c'était le gros bazar.
+
+En outil de remplacement assez intelligent, j'utilise un "drop down" terminal,
+[Guake](http://guake-project.org/index.html).
+Cela permet d'activer son terminal à l'instant où on presse la "hotkey"
+par défaut c'est _F12_, et le terminal passe au premier plan en plein écran. Il
+y a même la possibilité de le garder légèrement transparent, trop cool.
+
+Fini les terminaux dans tous les sens !
+Et tellement pratique quand on
+list une page importante en fond et qu'on peut s'y référer sans avoir à perdre le
+focus sur son terminal !!
 
 ![guake](guake.jpg#center)
 
-On debian, give a go to this installation command.
+Sur une installation Debian, lancez cette commande d'installation :
 
 ```sh
 sudo apt-get update && sudo apt install guake
 ```
 
-Good to go ? Now install tmux (and xclip for copy paste commands), same stuff
+Tout est bon ? Installez tmux (et xclip pour permettre les copier-coller depuis la console), même chose:
 
 ```sh
 sudo apt install tmux xclip
 ```
 
-Let's tweak a little bit tmux, fire a configuration by doing
+Modifions un peu tmux, créez un fichier de configuration en exécutant cette commande :
 
 ```sh
 touch ~/.tmux.conf
 ```
 
-#### Tmux basic workflow
+#### Un exemple de workflow Tmux
 
 Now it's time to review how tmux work.
 

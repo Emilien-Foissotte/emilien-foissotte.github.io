@@ -1,6 +1,10 @@
 ---
 title: "Et le blog fut"
 date: 2023-03-18T20:07:14+01:00
+cover:
+  image: "cover.png"
+  relative: true
+  alt: "Egg Chicken Internet Stable Diffusion"
 draft: false
 frtags: [MetaBlog, Github]
 ShowToc: true

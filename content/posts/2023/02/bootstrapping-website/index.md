@@ -15,6 +15,7 @@ TocOpen: false
 
 This article goes throught all the details in order to explain how setup a blogfolio
 like this one
+
 - From article posting using simple Markdown syntax 🔤
 - To deployment on Github Pages 🚀, with Giscus comments on each articles 🗣️
 - To monitoring of engagement using Goatcounter 📶
@@ -59,39 +60,44 @@ Make a fork of your favorite Hugo theme 🌟, and then add it as a submodule it 
 git submodule add --depth=1 https://github.com/<yourGHuser>/hugo-PaperMod.git themes/PaperMod
 git submodule update --init --recursive
 ```
+
 Later, you can update layouts and customize the theme under your own repo in this git submodule.
 
 Finally add in `config.yml`:
+
 ```yaml
 theme: "PaperMod"
 ```
 
 Cutomize to your liking your blog :
+
 - Add a search and archive page
 - Add a presentation page
 - tweak the `assets/css/extended/themes-vars-override.css` to get a color palette at your liking
 - Modify options under `config.yml` to enable or disable features
 
 **You would like to add some comment system ?**
+
 1. Create a "Discussions" category under your Github repository discussion tab. (Using "Announcements" is a good practice, as explained by <cite>Chris Wilson[^1]</cite>)
-[^1]: The "Announcements" category allows only Maintainers and Giscus Bot to create Discussions, which is better. Explained under this blog [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
+   [^1]: The "Announcements" category allows only Maintainers and Giscus Bot to create Discussions, which is better. Explained under this blog [post](https://cdwilson.dev/articles/using-giscus-for-comments-in-hugo/)
 2. Have a look at [Giscus](https://giscus.app/), answer the configuration questions and then
-paste the script under `layouts/partials/comments.html`. Do not forget to set `comments: true` under `config.yml`
+   paste the script under `layouts/partials/comments.html`. Do not forget to set `comments: true` under `config.yml`
 3. Now you have a fancy comment system ! ![comments](comments_giscus.png#center)
 
-
-
 **What about a monitoring dashboard ?**
+
 1. Sign up at [Goatcounter.com](https://www.goatcounter.com/), and copy the code snippet under the file `layouts/extend_footer.html`
 
 ```html
-<script data-goatcounter="https://<yoursitename>.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<script
+  data-goatcounter="https://<yoursitename>.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"
+></script>
 ```
+
 2. Go to your dashboard at [https://yoursitename.goatcounter.com](https://www.goatcounter.com/) and watch traffic incoming. If you do not see any peak, disable your adblocker.
 3. Now you can monitor the number of views of your posts ! ![dashboard](goatcounter_dashboard.png#center)
-
-
 
 ### Create some content
 
@@ -218,7 +224,7 @@ Basically writing some contents is just about kicking-off some Markdown which ma
 release cycle so simple !
 
 If you wish to record you blog under other Open Source ones, not hosted under a private
-solution like Medium or Substack, go to [diff.blog](https://diff.blog/)  
+solution like Medium or Substack, go to [diff.blog](https://diff.blog/)
 
 Thanks to all other bloggers for exposing their works, it makes life so much easier but doesn't trade off
 under the Open Sourceness of solutions.

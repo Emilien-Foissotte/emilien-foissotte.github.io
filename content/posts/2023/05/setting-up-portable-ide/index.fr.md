@@ -1,6 +1,10 @@
 ---
 title: "TMUX x NVIM : Hands-on"
 description: ""
+cover:
+  image: "cover.png"
+  relative: true
+  alt: "Portable Laptop Traveler Stable Diffusion"
 date: 2023-05-21T17:30:36+02:00
 publishDate: 2023-05-21T17:30:36+02:00
 draft: false

@@ -2,9 +2,9 @@
 title: "De Parquet vers CSV en un clin d'oeil"
 description: ""
 cover:
-    image: "cover.png"
-    alt: "A wild-haired, eccentric software developper with messy grey hair, wearing thick glasses asits atop a shiny, silver rocket ship gliding at high speed through a futuristic landscape of streaming green computer code and binary numbers. The developer is intensely focused on the compter, staring at a glowing, complex matrix equation hovering above his outstretched right hand. He holds an open laptop computer in his left hand. The laptop screen shows multicolored graphs and charts. The rocket's cone-shaped nose and finned tail leave streaks of fire and smoke in its wake as it rides a current of streaming letters, numbers and mathematical symbols. Detailed, highly realistic artwork, sharp focus, 4k resolution, masterpiece."
-    relative: true
+  image: "cover.png"
+  alt: "Rocket Developer Conversion Stable Diffusion"
+  relative: true
 date: 2023-08-26T09:50:14+02:00
 publishDate: 2023-08-26T09:50:14+02:00
 draft: false

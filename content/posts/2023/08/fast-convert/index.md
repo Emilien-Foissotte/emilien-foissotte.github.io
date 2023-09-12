@@ -1,5 +1,8 @@
 ---
 title: "Lightening fast, Parquet to CSV"
+cover:
+    image: "cover.png"
+    relative: true
 description: ""
 date: 2023-08-26T09:50:14+02:00
 publishDate: 2023-08-26T09:50:14+02:00
@@ -14,7 +17,7 @@ TocOpen: false
 This post will expose you how to convert in a very convenient and fast way 🚀 some `Apache Parquet`
 files to `CSV`, and vice-versa, using either DuckDB 🦆 or Pandas 🐍 for a baseline comparison
 
-As a quick bonus, we will embedded this tool in a small convient CLI script, easily triggered from your favorite 
+As a quick bonus, we will embedded this tool in a small convient CLI script, easily triggered from your favorite
 shell 👨‍💻
 
 Let's go !

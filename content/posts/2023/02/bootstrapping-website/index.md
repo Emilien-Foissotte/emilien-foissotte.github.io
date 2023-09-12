@@ -1,6 +1,10 @@
 ---
 title: "Start blogging"
 date: 2023-03-18T20:07:14+01:00
+cover:
+  image: "cover.png"
+  relative: true
+  alt: "Egg Chicken Internet Stable Diffusion"
 draft: false
 tags: [MetaBlog, Github]
 ShowToc: true

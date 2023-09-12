@@ -1,6 +1,10 @@
 ---
 title: "Cloud personnel"
 description: ""
+cover:
+  image: "cover.png"
+  relative: true
+  alt: "House Datacenter Stable Diffusion"
 date: 2023-08-06T22:15:11+02:00
 publishDate: 2023-08-06T22:15:11+02:00
 draft: false
@@ -62,7 +66,7 @@ _Dans la tête d'un nouvel email 📧 arrivant sur une boîte Gmail quasi-pleine
 
 L'esprit "craftsmanship" qui sommeille en moi m'a susuré l'idée d'utiliser l'excellente
 Raspberry Pi (Ubuntu, 64 bits, 8 GB) que je possède déjà à la maison pour streamer Films&Séries( [Abonnement Plex](https://www.plex.tv/)
-solution incroyable, là aucun scrupule pour chaque € déboursé). 👨‍💻 
+solution incroyable, là aucun scrupule pour chaque € déboursé). 👨‍💻
 
 La Raspberry Pi servira de serveur de stockage encore une fois, mais cette fois
 pour héberger photos et fichiers perso ! 🦾
@@ -135,7 +139,7 @@ end
 
 Évidemment la pression est un peu plus grande sur le système, il faut avoir des sauvegardes plus régulières
 et ne plus déléguer cette tâche à Google (_grands pouvoirs, grandes responsabilités.._), mais je me sentais confiant et avais la soif d'apprendre
-à mettre ça en place. 
+à mettre ça en place.
 
 De plus, mon stockage froid distant ([Uptobox](https://uptobox.com/) peut me sauver la mise au cas où mes
 HDD de la maison brûlaient ou venaient à être disfonctionnels.

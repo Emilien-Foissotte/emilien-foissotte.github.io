@@ -1,9 +1,13 @@
 ---
 title: "Personal Drive"
 description: ""
+cover:
+  image: "cover.png"
+  relative: true
+  alt: "House Datacenter Stable Diffusion"
 date: 2023-08-06T22:15:11+02:00
 publishDate: 2023-08-06T22:15:11+02:00
-draft:  false
+draft: false
 tags: ["Software Engineering", "Raspberry Pi", "Docker", "Traefik", "SysAdmin"]
 ShowToc: true
 TocOpen: false
@@ -614,10 +618,10 @@ sdc      8:32   0 465.7G  0 disk
 └─sdc1   8:33   0 465.7G  0 part
 ```
 
-Let's now format the hard drive with a file system that allow users permissions and so on. 
+Let's now format the hard drive with a file system that allow users permissions and so on.
 Be aware that everything on the hard drive will wiped out during the process !
 
-An example here by formatting the partition on the third hard drive with ext4 
+An example here by formatting the partition on the third hard drive with ext4
 (GNU/Linux filesystem)
 
 ```sh
@@ -632,7 +636,7 @@ Identify the `UUID` of your formatted disk, by running this command :
 lsblk -f
 ```
 
-Edit the file to enter theses values, replacing the UUID and the target location to something explicit : 
+Edit the file to enter theses values, replacing the UUID and the target location to something explicit :
 
 ```txt
 UUID=THE-ADDRESS-GOES-HERE /mnt/directory/location ext4 defaults 0
@@ -641,7 +645,7 @@ UUID=THE-ADDRESS-GOES-HERE /mnt/directory/location ext4 defaults 0
 Now you can mount the HDD (it will be done automatically at each startup and boot) :
 
 ```sh
-fstab mount -a 
+fstab mount -a
 ```
 
 Change the ownership of the target location to the user that will be used by Nextcloud in the docker image :
@@ -671,11 +675,11 @@ services:
 ```
 
 Where is traefik here ? It is not used as you can see because we are binding the port directly to the host, but not on the ports
-`80` and `443` so your webserver is available to host a ton of other services ! 
+`80` and `443` so your webserver is available to host a ton of other services !
 
 Be sure to open theses ports in your NAT to let internet traffic go along the way. No need for filtering as everything is secure on your Owncloud stack.
 
-Retrieve admin password by running `ncp-config` inside the docker after you had `docker-compose up -d` the stack. 
+Retrieve admin password by running `ncp-config` inside the docker after you had `docker-compose up -d` the stack.
 Take the opportunity also to allow your DNS name or local IP to the dashboard, otherwise you will be unable to reach it !
 
 Download data from Google Photos with [Google Takeout](https://support.google.com/accounts/answer/9666875?hl=fr).
@@ -692,8 +696,8 @@ Change again the ownership of the dumped photos :
 sudo chown www-data:www-data -R /mnt/directory/location/ncdata/data/
 ```
 
-
 Rescan the content of your files :
+
 ```sh
 docker exec -u 33 -it sh -c /var/www/nextcloud/occ files:scan --all
 ```
@@ -705,7 +709,7 @@ regenerate EXIF metadata from your newly updated photos
 docker exec -u 33 -it sh -c /var/www/nextcloud/occ memories:migrate-google-takeout
 ```
 
-Here is a preview (blurred to keep a little bit of privacy) , so cool isn't it ? 
+Here is a preview (blurred to keep a little bit of privacy) , so cool isn't it ?
 
 ![dashimage](NextcloudPi.png#center)
 
@@ -713,8 +717,8 @@ Congratulations, you own your data from now, hosted at home !! 🎊
 
 ![owndata](https://media.giphy.com/media/umbIrcUJbmuIUZ1e7M/giphy.gif#center)
 
-Everything is almost done, all we have left to do, is to make a DNS challenge in order to generate a wildcard SSL certificate. 
-You wouldn't transfer all your data, password, notes, agenda in plain unciphered connections ? Neither do I 😄 
+Everything is almost done, all we have left to do, is to make a DNS challenge in order to generate a wildcard SSL certificate.
+You wouldn't transfer all your data, password, notes, agenda in plain unciphered connections ? Neither do I 😄
 
 Let's go for enabling HTTPS on traefik and nextcloud !
 
@@ -747,8 +751,8 @@ sudo certbot certonly --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth
 
 Be sure to substitue domain names and escaping the the asterix with the backslash !
 
-Look at the output, and add the proper CNAME entry in your DNS provider. 
-Example output : 
+Look at the output, and add the proper CNAME entry in your DNS provider.
+Example output :
 
 ```txt
 Output
@@ -812,20 +816,23 @@ Your are now backed up by a secure encrypted SSL connection 😎
 For convenient usage, you can install nextcloud client on Android devices to upload directly
 files and take notes (Drive and Keep replacement).
 
-here is the link for Android apps : 
+here is the link for Android apps :
+
 - [Nextcloud](https://play.google.com/store/apps/details?id=com.nextcloud.client&pli=1)
 - [Nextcloud Notes](https://play.google.com/store/apps/details?id=it.niedermann.owncloud.notes)
 
 To sync your calendar, tasks and contacts, you can use Davx5
+
 - [DAVX5 on Play Store](https://play.google.com/store/apps/details?id=at.bitfire.davdroid&referrer=utm_source%3Dhomepage)
 - [DAVX5 on FStore](https://f-droid.org/packages/at.bitfire.davdroid/)
 
 To use and view photos as efficiently than on Google Photos App:
+
 - [Photos](https://play.google.com/store/apps/details?id=com.nkming.nc_photos)
 
 You can move around will all your data in your pocket and keep all your documents centralized at home.
 
-To setup clients, please follow [Davx5](https://www.davx5.com/tested-with/nextcloud) and 
+To setup clients, please follow [Davx5](https://www.davx5.com/tested-with/nextcloud) and
 [Nextcloud](https://docs.nextcloud.com/server/latest/user_manual/fr/groupware/sync_android.html)
 documentation. Very efficient !
 
@@ -835,6 +842,7 @@ documentation. Very efficient !
 
 Now everything is at home be sure to backup you data efficiently, otherwise you would loose everything.
 Let's follow the 3-2-1 rule :
+
 - A backup on `3` differents locations
 - On `2` separate physical volumes
 - With at least `1` copy stored remotely (in case everything burns at home)
@@ -853,13 +861,12 @@ In case of hard drive failure, the other drive would contain your precious data.
 
 Once a month, upload a copy to Uptobox, in order to save data in another safe place.
 
-
-Once the  zip produced, it is ready to be shipped, using [uptobox-cli](https://github.com/vic-blt/uptobox-cli)
+Once the zip produced, it is ready to be shipped, using [uptobox-cli](https://github.com/vic-blt/uptobox-cli)
 _NB: Be sure to update nameserver for Cloudflare ones, as sometimes Uptobox is kicked out by french FAI_
 
 Setup the cli, install with `npm install` and fill `config.js` with proper credentials and set premium to `1`.
 
-Once done, upload your file 
+Once done, upload your file
 
 ```sh
 node /home/pi/uptobox-cli/index.js uploadFiles backupnextcloud.zip
@@ -880,23 +887,21 @@ As it is automatically done, just ensure that the job still work times to times,
 goes wrong. As a free advice, I encourage you to save your docker-compose files in a VCS (private to do not expose hashs) system,
 like Github or Gitlab.
 
-Feel free to share with other of your household for them to create an account, they will be able to store their data and 
-you can share files with them. 
+Feel free to share with other of your household for them to create an account, they will be able to store their data and
+you can share files with them.
 
 Give a go to "Notes" app and to "memories", I find them amazing. You can install easily them from the admin dashboard
 in the `admin` account directly in Nextcloud.
 
 Feel free to share with me in comments your tips about backup or some other system you have found that are as cool
-as Nextcloud, I heard about CasaOS but I don't know if it's as good as Nextcloud or not. 
+as Nextcloud, I heard about CasaOS but I don't know if it's as good as Nextcloud or not.
 
-See you soon, and thanks for your time. 
+See you soon, and thanks for your time.
 
-
-
-### Some sources and refering links that helped me setting up this whole system. 
+### Some sources and refering links that helped me setting up this whole system.
 
 Thank you to all developers that have shared advices and recommendations.
-❤️  to Nextcloud team
+❤️ to Nextcloud team
 
 - [Nextcloud Guide 2020](https://help.nextcloud.com/t/guide-to-getting-started-with-nextcloudpi-docker-in-2020/93396)
 

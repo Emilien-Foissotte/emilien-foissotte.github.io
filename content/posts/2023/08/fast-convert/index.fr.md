@@ -3,6 +3,7 @@ title: "De Parquet vers CSV en un clin d'oeil"
 description: ""
 cover:
     image: "cover.png"
+    alt: "A wild-haired, eccentric software developper with messy grey hair, wearing thick glasses asits atop a shiny, silver rocket ship gliding at high speed through a futuristic landscape of streaming green computer code and binary numbers. The developer is intensely focused on the compter, staring at a glowing, complex matrix equation hovering above his outstretched right hand. He holds an open laptop computer in his left hand. The laptop screen shows multicolored graphs and charts. The rocket's cone-shaped nose and finned tail leave streaks of fire and smoke in its wake as it rides a current of streaming letters, numbers and mathematical symbols. Detailed, highly realistic artwork, sharp focus, 4k resolution, masterpiece."
     relative: true
 date: 2023-08-26T09:50:14+02:00
 publishDate: 2023-08-26T09:50:14+02:00
@@ -210,17 +211,7 @@ Le pic de mémoire a une valeur `4.4` fois moins importante avec DuckDB comparat
 
 Il nous suffit de modifier le `.zshrc` ou `.bashrc` avec ces petites fonctions :
 
-```sh
-function csv_to_parquet() {
-    file_path="$1"
-    duckdb -c "COPY (SELECT * FROM read_csv_auto('$file_path')) TO '${file_path%.*}.parquet' (FORMAT PARQUET);"
-}
-
-function parquet_to_csv() {
-    file_path="$1"
-    duckdb -c "COPY (SELECT * FROM '$file_path') TO '${file_path%.*}.csv' (HEADER, FORMAT 'csv');"
-}
-```
+{{< gist Emilien-Foissotte beed79c794db3642830cf149701e27c4  >}}
 
 Et on peut charger et transformer les fichiers en une ligne de commande :
 

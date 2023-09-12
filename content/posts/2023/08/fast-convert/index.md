@@ -1,8 +1,9 @@
 ---
 title: "Lightening fast, Parquet to CSV"
 cover:
-    image: "cover.png"
-    relative: true
+  image: "cover.png"
+  relative: true
+  alt: "Rocket Developer Conversion Stable Diffusion" 
 description: ""
 date: 2023-08-26T09:50:14+02:00
 publishDate: 2023-08-26T09:50:14+02:00
@@ -195,17 +196,7 @@ The overall peak is `4.4` times less important with DuckDB. Excellent !
 
 Simply tweak your `.zshrc` or `.bashrc` with theses incredible functions :
 
-```sh
-function csv_to_parquet() {
-    file_path="$1"
-    duckdb -c "COPY (SELECT * FROM read_csv_auto('$file_path')) TO '${file_path%.*}.parquet' (FORMAT PARQUET);"
-}
-
-function parquet_to_csv() {
-    file_path="$1"
-    duckdb -c "COPY (SELECT * FROM '$file_path') TO '${file_path%.*}.csv' (HEADER, FORMAT 'csv');"
-}
-```
+{{< gist Emilien-Foissotte beed79c794db3642830cf149701e27c4  >}}
 
 And transform your files in a one-liner command :
 

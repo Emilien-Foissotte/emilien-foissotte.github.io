@@ -1,5 +1,5 @@
 ---
-title: "Genetic Algorithm"
+title: "Optimization, 1984 and Genetics Algorithms"
 description: ""
 date: 2023-10-07T09:01:23+02:00
 publishDate: 2023-10-07T09:01:23+02:00
@@ -38,6 +38,8 @@ my last job.
 An idea of situation to apply some Genetic Algorithm made up
 is way in my mind. As you would expect, it will not be a pleasant
 story, but it will be perfect for the demonstration.
+
+### Background Story
 
 Let say that you are an employee of the Thought Police, the
 organization of _IngSoc_, the totalitarian regime in place.

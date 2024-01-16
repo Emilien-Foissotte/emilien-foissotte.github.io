@@ -6,7 +6,7 @@ cover:
     alt: "DNA Genetic Engineering Big Brother Stable Diffusion"
     relative: true
 date: 2023-10-07T09:01:23+02:00
-publishDate: 2023-10-07T09:01:23+02:00
+publishDate: 2024-01-16T07:00:00+01:00
 draft: true
 tags: [Machine Learning, Python]
 ShowToc: true
@@ -14,8 +14,6 @@ TocOpen: false
 ---
 
 # TL;DR
-
-[MERMAID](#mermaid)
 
 Dans ce billet de blog, nous allons utiliser et étudier le
 fonctionnement des algorithmes génétiques, pour résoudre un problème
@@ -32,41 +30,50 @@ C'est parti !
 ## Intro
 
 Il y a quelques années, j'étais tombé sur un excellent billet de <cite>blog[^1]</cite>,
-
-qui évoquait un type d'algorithme connu pour être très puissants dans 
-le cas où le cadre du problème posé pouvait changer assez rapidement. 
+de Max Halford qui évoquait un type d'algorithme connu pour être très puissant dans 
+le cas où l'objectif du problème posé pouvait changer assez rapidement 🎯
 
 L'auteur avait expliqué à merveille le fonctionnement sur un cas 
-mathématique. Tout le fonctionnement de ce genre d'algorithme puise 
-ses concepts fondamentaux dans la théorie de l'évolution du Darwinisme. 
+mathématique (trouver les coefficients d'une fonction polynomiale).
+Tout le fonctionnement de ce genre d'algorithme puise 
+ses concepts fondamentaux dans la théorie de l'évolution du Darwinisme 🧬
 
 Ayant toujours été séduit par la biologie et l'étude du vivant (je vous 
-conseille par ailleurs l'excellent Podcast __Sur les Épaules de Darwin__),
-cela m'a semblé un excellent sujet à creuser sur un billet de blog !
+conseille par ailleurs cet excellent <cite>podcast[^2]</cite> qui explore le thème 
+de la compétition dans nos vies,
+cela m'a semblé être un excellent sujet à creuser sur un billet de blog ! 💡
+
 
 J'ai récemment eu la chance de lire de nouveau, le très dystopique
-**1984** de George Orwell adapté en bande dessinée, un cadeau de départ 
-de mes collègues de chez SITA. 
+**1984** de George Orwell adapté en [bande dessinée](https://www.fnac.com/a15640726/George-Orwell-1984)
+, un chouette cadeau de départ de mes collègues de chez SITA. 👁️
 
 
 À la relecture des lignes glaçantes du roman, une idée de situation où 
 ce genre d'algorithme pourrait survenir m'est venue à l'esprit.
 Comme vous pouvez vous y attendre avec le thème du roman, l'histoire
-ne sera pas joyeuse ni merveilleuse, mais elle démontrera très bien l'
-intérêt de ce genre d'algorithme évolutif.
+ne sera pas joyeuse ni merveilleuse, mais elle démontrera très bien l'intérêt
+de ce genre d'algorithme évolutif. ⚙️
 
-Faisons un peu de place à la narration..
+Faisons un peu de place à la narration.. 
 
 La narration ne vous intéresse pas ? 
-Rendez-vous [ici](#rapide-bilan-de-linterrogatoire-à-mener) pour le détail du problème à résoudre !
+Rendez-vous [ici](#rapide-bilan-de-linterrogatoire-à-mener) pour le détail
+mathématique du problème à résoudre ! 🚀
 
 ### Par un froid matin d'hiver..
 
 ![walking](story_illustrations/coldmorning.png#center)
 
-Le régime en place, l'IngSoc lutte toujours contre les dissidents de la 
-Résistance. Les hommes de l'ombre, menés par Goldstein cherchent 
-toujours à assassiner Big Brother, le dirigeant suprême du pays. 
+Le froid vous glace les poumons mais n'empêche pas vos nombreuses 
+pensées de tourner à toute vitesse dans votre tête, à l'abri des 
+regards de Big Brother, pour l'instant..
+
+
+Ces derniers mois le régime en place, l'IngSoc lutte toujours contre
+les dissidents de la Résistance. Les hommes de l'ombre, menés par 
+Goldstein cherchent toujours à assassiner Big Brother, le dirigeant
+suprême du pays. 
 
 Quelques semaines plus tôt, vous avez entendu l'annonce au __télécran__
 de l'arrestation de Winston Smith et de plusieurs autres fauteurs de trouble.
@@ -77,32 +84,58 @@ depuis le travail au Ministère de la Vérité vous occupait constamment et
 vous n'aviez pas le temps de penser à quoi que ce soit d'autres que toutes ces 
 informations à ré-actualiser à la gloire du régime. 
 
-Le batiment du Ministère apparait à l'angle de la rue.
-
+Le bâtiment du Ministère apparaît à l'angle de la rue, il est temps de 
+se ressaisir pour qu'aucun des agents ne remarque ces pensées dissidentes
+sur votre visage...
 
 ![building](story_illustrations/ministry.jpg#center)
 
-Mais ce matin, dans le département, une frénésie planait dans l'air suite 
-à un événement survenu la veille. La police de la pensée avait effectué 
+Étonnamment l'atmosphère morose ce matin dans le département laissait place 
+à une frénésie qui plane dans l'air.
+
+Les télécrans annonçait tous que la veille la police de la pensée avait effectué 
 une descente à quelques blocs d'ici, et un grand nombre de dissidents 
-avait été arrêté, mais personne ne savait le nombre exact encore. 
+avaient été arrêtés, mais personne ne savait encore le nombre exact !  
 
-Une fièvre frénétique agitait les esprits et causait grand bruit dans 
-les couloirs du ministère. Un silence froid tomba quand le dirigeant de la 
-Police de la pensée débarqua avec une mission pour le ministère.
+Une fièvre houleuse agitait les esprits et la rumeur courait dans les couloirs
+du ministère. Une série de groupes murmurants et lançant des regards tantôt accusateurs, 
+tantôt effrayés, s'égrainent au fur et à mesure des angles des longs corridors.
 
+Le venin de la peur commençait à instiller son poison dans tous les départements du Ministère,
+pas un agent n'avait pu manquer la nouvelle..
 
-Quelques phrases sont jetées à l'audience, émaillées de **Double Pensée** mais 
-le coeur de l'annonce ne fait aucun doute. 
+A peine passé les portiques de sécurité du bâtiment, vous apercevez une 
+grosse berline s'arrêtant devant le bâtiement. Sur le capot le logo de la Police de la
+pensée jeta un froid et fit taire tous les chuchotements. 
+
+Un grand personnage, le chef de la Police ouvrit la porte et au même instant, 
+une voie stridente annonçait une réunion d'urgence à tout le Ministère dans les hauts-parleurs.
+
+Tout le bâtiment se dirigeait désormais dans un mutisme glaçant vers l'immense 
+assemblée du ministère, seuls quelques regards furtifs d'angoisse 
+transperçent la sombre masse humaine, dans sa longue marche silencieuse vers la grande salle.
+
+Après un bref silence, quelques phrases sont jetées à l'audience,
+déguisées de **Double Pensée** rendant l'ensemble difficile à comprendre pour 
+tout non initié. 
+
+Mais très vite votre oreille aguerrie attrappe des noms de code que vous reconaissez
+entre les lignes, vous comprenez qu'il s'agit du fruit de votre travail..
 
 ![announcement](story_illustrations/announcement.png#center)
 
+Quel cauchemar, il ne pouvait arriver pire évènement..
+
 Votre sang ne fait qu'un tour, le dossier sur lequel vous étiez en train de 
-travailler depuis des semaines à porté ses fruits. Les dissidents que 
-vous traquiez sont tombés.
+travailler depuis des semaines a donc porté ses fruits. Les dissidents que 
+vous traquiez sont tombés, mais dans quelles circonstances..
+
+Le doute vous ronge, est-ce que votre couverture est grillée ?
+
+Mais c'est extrêmement délicat et loin d'être une bonne nouvelle. 
 
 Très vite vous comprenez que cela va être à vous d'organiser
-les interrogatoires. Mission très dangeureuse, de nombreux agents ont disparus
+les interrogatoires. Mission très dangereuse, de nombreux agents ont disparus
 ces derniers mois après avoir assumé cette lourde responsabilité. 
 
 À la moindre erreur, on peut croire que vous travaillez pour l'ennemi, et vous 
@@ -122,33 +155,45 @@ En passant sur le seuil de la porte, une sueur froide coule dans votre dos.
 de dissidents sur le point de commettre une série d'attentats sur l'IngSoc. 
 Big Brother est très fier de vous." commence par vous asséner le haut cadre.
 
-Étonnament il est de bonne humeur.
+Étonnamment il semble de bonne humeur.
 
 Fièrement il continue :
-"Hier, nous avons arrêté 30 résistants 
-hautement armés. Ils sont désormais désarmés et à notre merci, mais lors 
-de leur entraînement, ils ont appris à ne communiquer qu'en langage crypté."
+"Hier, nous avons arrêté 30 résistants hautement armés.
+Ils sont désormais désarmés et à notre merci, bravo pour votre travail." 
 
-Son regard laisse présager que les ennuis commençent..
+
+Sans prévenir, il se met alors à hurler
+"Comment avez-vous pu manquer que lors de leur entraînement,
+ils n'ont appris à ne communiquer qu'en langage crypté !"
+
+Il continue, d'un regard inquisiteur : " Tous les plans 
+pour emprisonner ces individus sont foutus. Il faut tout refaire avant leur
+transfert. C'est votre mission, je veux les plans de la prison
+pour les transmettre au Ministère de la Vérité d'ici 3 heures."
 
 ![order](story_illustrations/order.png#center)
 
 D'un doigt furieux, il vous tance
 
-"Le travail n'est pas terminé, il faut absolument récupérer les informations
-qu'ils savent dans les géoles du Ministère de la Vérité. Mais ils ne 
-doivent communiquer entre eux sous aucun prétexte. Toute communication 
+"Toute communication 
 entre les membres de cette poche de résistance leur permettrait de construire
 un récit crédible, c'est le seul point faible de la double pensée.
 
 Vous devez les faire parler et empêcher au maximum les échanges entre eux."
 
-Et là vous comprenez, que vous allez devoir tout organiser. 
 
 Tout tourne très vite dans votre tête, pour essayer de recoller 
-les morceaux de votre mission. 
+les morceaux de votre mission. Cela va être compliqué, il y a 
+plein de paramètre à prendre en compte, le nombre d'individus, le nombre
+de langages cryptés, le nombre de cellules..
+
+La tâche est immense.
+
+Il faut faire appel au experts du Ministère du Désapprentissage Machine
+et leurs algorithmes si puissants..
 
 ![thinking](story_illustrations/thinking.png#center)
+
 Hier, le parti a arrêté 30 hommes armés. Ils font partis des unités d'élite
 de Goldstein que vous connaissez bien. Ils sont organisés en escouade plus 
 petites, qui savent communiquer en langage chiffré. 
@@ -193,7 +238,7 @@ des autres. Elle ne peut cependant pas le parler.
 `Cellule_1`, `Cellule_2` ...
 
 - Chaque cellule peut brouiller un langage chiffré, parmi un nombre 
-pré-determiné de langage, différents pour chacune ces cellules. 
+pré-déterminé de langage, différents pour chacune des cellules. 
 
 - Pour mener à bien les interrogatoires, chaque cellule doit contenir des 
 membres que d'une seule escouade afin de brouiller toutes communications. 
@@ -201,7 +246,7 @@ membres que d'une seule escouade afin de brouiller toutes communications.
 - Chaque cellule peut contenir un nombre pré-défini de prisonniers. 
 
 - Si un prisonnier échange une information cryptée, alors son interrogatoire
-est corrompu toute information est perdue. 
+est corrompu et toute information est perdue. 
 
 - En cas de manque de place dans les cellules, vous disposez de la cour
 de promenade, un lieu non brouillé. Tout homme qui y est placé pourra 
@@ -316,12 +361,12 @@ Les différentes étapes de fonctionnement sont les suivantes. Nous ferons
 le parallèle avec un code orienté objet par la suite pour illustrer 
 les différentes méthodes. 
 
-- Premièrement, un ensemble d'individu est généré au hasard. Chaque 
+- Premièrement, un ensemble d'individus est généré au hasard. Chaque 
 individu est décrit intégralement par l'ensemble de ses gènes, 
 l'équivalent de l'ADN dans le domaine de la biologie. Chaque gène encode
 une fonctionnalité particulière, ici on peut définir chaque gène `X_ij` comme
-étant le nombre de prisonnier de la escouade `j` dans la cellule `i`. Notez
-que la réprésentation matricielle du problème équivaut ainsi à représenter
+étant le nombre de prisonniers de l'escouade `j` dans la cellule `i`. Notez
+que la représentation matricielle du problème équivaut ainsi à représenter
 l'ADN.
 
 - Ensuite, on va sélectionner chaque individu et évaluer sa performance
@@ -331,7 +376,7 @@ de sa performance, pour simuler "la sélection naturelle".
 - Un sous-ensemble des meilleurs individus est sélectionné. Il y a différentes
 manières de sélectionner les individus, on peut prendre par exemple le 
 système de sélection par roulette, où les meilleurs individus ont 
-plus de chance d'être sélectionnés.
+plus de chance d'être sélectionné.
 
 - On croise les différents individu en altérant leur ADN, soit au 
 sein d'un même individu soit en croisant l'ADN de 2 individus performants. 
@@ -354,7 +399,7 @@ Classiquement en biologie, on parle de deux types de modifications bien
 connues de l'ADN :
 
 - **La mutation** : un processus aléatoire qui modifie une portion d'un gène
-et vient aléter son fonctionnement, qui arrive lors de la réplication de
+et vient altérer son fonctionnement, qui arrive lors de la réplication de
 l'ADN. Ce processus peut alors engendrer une modification du comportement
 de l'individu, pouvant conférer un avantage évolutif ou non. 
 
@@ -418,7 +463,7 @@ problem = {
 }
 ```
 
-_NB: 1000 est simplement utisé comme une valeur arbitrairement haute._
+_NB: 1000 est simplement utilisé comme une valeur arbitrairement haute._
 
 ### Générer des individus
 
@@ -426,7 +471,7 @@ Maintenant la principale étape consiste à générer
 une générations d'individus qui pourrait répondre aux contraintes
 du problème. 
 
-Pour commencer, initions un objet qui va réprésenter cet individu. 
+Pour commencer, initions un objet qui va représenter cet individu. 
 
 L'idée de cette méthode va être de répartir au hasard les différents 
 membres de chaque squad dans les cellules
@@ -519,7 +564,7 @@ def evaluate(self):
    self.fitness = self.arrested - sum
 ```
 
-Évaluons l'individu prédémment généré :
+Évaluons l'individu précédémment généré :
 
 ```python
 >>> i1.evaluate()
@@ -529,7 +574,7 @@ def evaluate(self):
 
 ### Générer une population entière
 
-Pour aggréger une population d'individus, rien de plus
+Pour agréger une population d'individus, rien de plus
 simple, je vais créer une classe avec un nouvel Objet.
 
 ```python
@@ -589,21 +634,20 @@ en déplaçant tous les détenus vers la cour de promenade. Afin de limiter la
 pénalité de ce choix, on va ensuite venir, si c'est possible, rapatrier 
 des détenus en cour de promenade dans la cellule, dans la limite du possible.
 
-Le flowchart des possibilités
-
-
-## Mermaid
+Voici le flowchart des possibilités
 
 {{<mermaid>}}
 
 flowchart TD
-    S0[Original </br> Individual] -->|Mutation & </br> Rates| C{Types}
-    C -->|One| D[Move prisoners from </br> cell to courtyard]
-    C -->|One| E[Move prisoners from </br> courtyard to cell]
-    C -->|One| F[Move all prisoners from </br> cell to courtyard, </br> and move in other squad to Cell]
+    S0[Original </br> Individual] -->|For each cell </br> influenced by rates| C{Mutation type </br> applied }
+    C --> D[Move prisoners from </br> cell to courtyard]
+    C --> E[Move prisoners from </br> courtyard to cell]
+    C --> F[Move all prisoners from </br> cell to courtyard, </br> and move in other squad to Cell]
 
 {{</mermaid>}}
 
+Chaque condition de mutation est évaluée pour s'assurer que les contraintes
+du problème sont respectées.
 
 Voici le snippet de génération du nouvel individu muté 
 
@@ -793,7 +837,7 @@ de permettre le mélange des gènes de 2 individus performants
 pour créer un individus enfant ayant les attributs de l'un et
 de l'autre des parents.
 
-L'idée derrière ce snippet est d'aléatoirement choisir pour chaque cellule
+L'idée derrière ce snippet de choisir aléatoirement pour chaque cellule
 s'il la récupère de l'individu parent 1 ou de l'individu parent 2. 
 
 La cour fera office d'élément compensateur s'il y a des prisonniers qui ne peuvent
@@ -802,25 +846,48 @@ alors on les ajoutera ou on les prendra depuis la cour, si c'est possible.
 
 Si ça n'est pas possible alors on ne fait pas le croisement. 
 
+Voici le flowchart du Feature Crossing 
+
+{{<mermaid>}}
+
+flowchart TD
+    S0[Parent </br> Individual 1] --->|Originating invidivual </br> for each cell </br> influenced by rates| C{Feature Crossing </br>type applied}
+    S1[Parent </br> Individual 2] -->|Considered for mixin| C
+    C --> D[Take prisoners from Parent 1]
+    C --> E[Take prisoners from Parent 2 </br> Compensate difference with Courtyard]
+
+{{</mermaid>}}
 
 ```python
 def crossover(self, mixinInd, rate_prop):
-    # to crossover features between cells, take randomely a cell 
+    """
+    Create a crossover individual, based on object and other parent.
+    Args:
+        mixinInd: Other individual to mix in to create the child individual
+        rate_prop: Percentage to apply to increase the chance that individual get mixed up
+
+    Returns:
+       An individual resulting from the crossover
+    """
+    # to crossover features between cells, take randomely a cell
     # from one individual and the other cell from mix in individual
     rand_cell_list = deepcopy(list(self.cell_list[:-1]))
     rand.shuffle(rand_cell_list)
+    logs = []
     for i in range(int(len(rand_cell_list) * rate_prop)):
         cell = rand_cell_list[i]
         choice = random.choice(["self", "other"])
         if choice == "other":
-            # print(f"Crossover {cell} - {choice}")
+            logs.append(f"Crossover {cell} - {choice}")
             old_cell = self.state[self.cell2indice[cell]]
             new_cell = mixinInd.state[mixinInd.cell2indice[cell]]
             diff_quantities = old_cell - new_cell
             projected_courtyard = (
                 self.state[self.cell2indice["courtyard"]] + diff_quantities
             )
-            # print(f"New {new_cell} - Old {old_cell} - Diff {diff_quantities} - CW {projected_courtyard}")
+            logs.append(
+                f"New {new_cell} - Old {old_cell} - Diff {diff_quantities} - CW {projected_courtyard}"
+            )
             # courtyard must always be above zero, constraint
             test_above_zero = projected_courtyard >= np.zeros(
                 (1, len(projected_courtyard))
@@ -829,7 +896,9 @@ def crossover(self, mixinInd, rate_prop):
             if test_above_zero.all() and test_below_capa:
                 self.state[self.cell2indice[cell]] = new_cell
                 self.state[self.cell2indice["courtyard"]] = projected_courtyard
+    return logs
 ```
+
 
 Prenons un cas d'exemple pour clarifier le fonctionnement !
 
@@ -903,7 +972,7 @@ C'est un gain de fitness de `3` !
 
 Maintenant que nous avons une manière de générer de nouveau individus et
 enrichir notre population de base, il faut choisir une méthode pour 
-sélectionner les meilleurs d'entre-eux sans tomber dans un local-optimal. 
+sélectionner les meilleurs d'entre eux sans tomber dans un local-optimal. 
 
 Il faut faire la balance entre l'exploration des solutions possibles et la rapidité
 de convergence vers une bonne solution.
@@ -927,13 +996,14 @@ les individus sélectionnés seront les meilleurs.
 #### Sélection par roulette
 
 Nous allons implémenter une solution plus simple, qui sélectionne de manière pondérée 
-les individus. Il faut imaginze une grande roue, sur laquelle le périmètre a été subdivisié 
-en longueurs proportionnelle à la valeur de la fonction objectif de chaque individu.
+les individus. Il faut imaginer une grande roue, sur laquelle le périmètre a été subdivisié 
+en longueurs proportionnelles à la valeur de la fonction objectif de chaque individu.
 
 À chaque fois que l'on veut choisir un individu, on fait virtuellement tourner 
-cette roue et on choisit l'indidividu sur lequelle s'arrêterait la roue. 
+cette roue et on choisit l'individu sur laquelle s'arrêterait la roue. 
 
-L'implémentation (un peu moins fun je vous l'accorde) de cette sélection est la suivante,
+L'implémentation (un peu moins fun qu'une roue de la fortune, je vous l'accorde)
+de cette sélection est la suivante,
 
 
 ```python
@@ -948,65 +1018,69 @@ l'évolution des individus.
 
 - On ajoute le 3 meilleur individus à la liste des parents
 - On sélectionne d'autres parents jusqu'à obtenir 10 individus
-- Pour chaque parent, on créée 1 exacte copie et 4 individus 
+- Pour chaque parent, on crée 1 exacte copie et 4 individus 
 mutés
-- Et 
+- Et on remplace la population par la nouvelle
+- On l'évalue et la trie par performance
 
 
 ```python
 def enhance(self):
-        parents = []
+    """
+    Enhance the population by making an iteration of selection, mutation, feature crossing.
+    """
+    parents = []
 
-        # add the 3 best
-        for ind in self.individuals[:1]:
-            parents.append(ind)
-        
-        # roulette selection
-        while len(parents) < 10:
-            max = sum([i.fitness for i in self.individuals])
-            selection_probs = [i.fitness/max for i in self.individuals]
-            parents.append(self.individuals[rand.choice(len(self.individuals), p=selection_probs)])
-        
-        # Create new childs individuals from parents
-        newIndividuals = []
-        # Go through top 10 individuals - mutate
-        for individual in parents:
-            # Create 1 exact copy of each top 10 individuals
-            newIndividuals.append(deepcopy(individual))
-            # Create 4 mutated individuals
-            for _ in range(4):
-                newIndividual = deepcopy(individual)
-                newIndividual.mutate(
-                    rate_amount=self.rate_amount,
-                    rate_prop=self.rate_prop
-                )
-                newIndividuals.append(newIndividual)
-        # create 10 pairs of individuals - crossover
-        pairs = [(random.choice(parents), random.choice(parents)) for _ in range(10)]
-        for pair in pairs:
-            parent1, parent2 = pair
-            newIndividual_parent1 = deepcopy(parent1)
-            newIndividual_parent2 = deepcopy(parent2)
-
-            newIndividual_parent1.crossover(
-                mixinInd=newIndividual_parent2,
+    # add the 3 best
+    for ind in self.individuals[:1]:
+        parents.append(ind)
+    
+    # roulette selection
+    while len(parents) < 10:
+        max = sum([i.fitness for i in self.individuals])
+        selection_probs = [i.fitness/max for i in self.individuals]
+        parents.append(self.individuals[rand.choice(len(self.individuals), p=selection_probs)])
+    
+    # Create new childs individuals from parents
+    newIndividuals = []
+    # Go through top 10 individuals - mutate
+    for individual in parents:
+        # Create 1 exact copy of each top 10 individuals
+        newIndividuals.append(deepcopy(individual))
+        # Create 4 mutated individuals
+        for _ in range(4):
+            newIndividual = deepcopy(individual)
+            newIndividual.mutate(
+                rate_amount=self.rate_amount,
                 rate_prop=self.rate_prop
             )
-            newIndividuals.append(newIndividual_parent1)
-        
-        # Replace the old population with the new population of offsprings
-        self.individuals = newIndividuals
-        self.evaluate()
-        self.sort()
-        # Store the new best individual
-        self.best.append(self.individuals[0])
+            newIndividuals.append(newIndividual)
+    # create 10 pairs of individuals - crossover
+    pairs = [(random.choice(parents), random.choice(parents)) for _ in range(10)]
+    for pair in pairs:
+        parent1, parent2 = pair
+        newIndividual_parent1 = deepcopy(parent1)
+        newIndividual_parent2 = deepcopy(parent2)
+
+        newIndividual_parent1.crossover(
+            mixinInd=newIndividual_parent2,
+            rate_prop=self.rate_prop
+        )
+        newIndividuals.append(newIndividual_parent1)
+    
+    # Replace the old population with the new population of offsprings
+    self.individuals = newIndividuals
+    self.evaluate()
+    self.sort()
+    # Store the new best individual
+    self.best.append(self.individuals[0])
 ```
 
 Lançons un calcul sur plusieurs générations avec 30 individus au départ, 
 avec comme condition d'arrêt soit l'arrivée sur 500 générations, soit 
 la fonction objectif étant égale à la capacité des cellules (signifiant 
 qu'aucune optimisation supplémentaire sera trouvée, le maximum global ou un des
-maximums s'il n'est pas unique, est atteint.)
+maximum s'il n'est pas unique, est atteint.)
 
 
 Voici l'implémentation :
@@ -1067,16 +1141,20 @@ Mais vous avez fait du mieux possible.
 "Bravo Matthew. Big Brother est satisfait de votre travail. Continuez
 ainsi."
 
+Secrètement, derrière ce masque de fausse fierté vous soufflez de soulagement.
+
+Votre couverture est toujours sauve, bravo !
+
 ![bigbrotherispleased](story_illustrations/bigbrotherispleased.jpg#center)
 
 ### Pour aller plus loin
 
-Si vous souhaitez lancer le notebook de votre côté, il est disponible 
-sur mon Repo Githab à cette adresse : [Notebook]()
+Si vous souhaitez lancer le code de votre côté, il est disponible 
+sur mon Repo Github.
 
 Envie de jouer avec un dashboard ? Une application hébergée sur Streamlit 
 est disponible ici ! Jetez un oeil au repos [Github](https://github.com/Emilien-Foissotte/ml-genetics-algorithm-app) 
-des sources pour l'utiliser en Live
+des sources pour l'utiliser en Live.
 
 Vous pouvez : 
 
@@ -1121,8 +1199,14 @@ En effet, cela ne sera peut-être pas la meilleure solution, mais la solution tr
 en un temps raisonnable et sera une bonne solution (au sens d'un optimum local). 
 
 Les algorithmes génétiques sont sensibles à la manière dont vous choisissez les paramètres
-d'éxécution (taux de mutation, population de départ, proportions d'individus mutés et de crossover), 
+d'exécution (taux de mutation, population de départ, proportions d'individus mutés et de crossover), 
 explorez les différentes possibilités pour essayer. 
 
 
-[^1]: Cet excellent article de [blog](https://maxhalford.github.io/blog/genetic-algorithms-introduction/) de Max Halford présente à merveille les algorithmes génétiques, de manière assez simple, mais sans feature crossing. 
+[^1]: Cet excellent article de [blog](https://maxhalford.github.io/blog/genetic-algorithms-introduction/) de Max Halford
+présente à merveille les algorithmes génétiques, de manière assez simple, mais sans feature crossing. 
+
+[^2]: Ce [podcast](https://www.radiofrance.fr/franceculture/podcasts/avec-philosophie/qu-a-vraiment-dit-darwin-7854050)
+explore la manière de lire la compétition entre les individus de manière générale, et
+surtout d'éviter de tomber dans les écueils de la lecture du darwinisme social ou de la lecture trop simpliste par
+le biais de la performance individuelle uniquement par exemple dans les contextes sociaux. 

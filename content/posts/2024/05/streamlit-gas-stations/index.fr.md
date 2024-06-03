@@ -1,6 +1,5 @@
 ---
-title: "Saving Money, End to End DataEng dashboard showcase"
-description: ""
+title: "Économiser de l'argent,en créant un Dashboard Data de A à Z"
 cover:
   image: "cover.png"
   alt: "Carburoam Front Page"
@@ -16,49 +15,63 @@ TocOpen: false
 
 # TL;DR
 
-This post will deep dive in the buidling of an end to end
-data engineering project ⚙️ .
+Dans ce billet de blog, nous allons voir comment créer de A à Z
+un projet de Data engineering, de l'ETL, la création de notre
+schéma de données, l'ORM de l'application, son backend et ensuite
+son déploiement avec Streamlit Cloud ⚙️ .
 
-The idea will be to retrieve a price list of gas stations in France ⛽,
-create a job to extract it every day 📅 and craft a dashboard to expose those price to
-logged user 📊.
+Le but est de récupérer la liste des prix de stations essence en France ⛽,
+automatiser un job qui va venir mettre à jour les valeurs quotidiennement 📅 et construire un dashboard pour
+afficher les prix personnalisés aux utilisateurs du site 📊.
 
-After reading this blog post, you'll have fundamentals on how to build data
-dashboard and scrap your own data sources 🚀.
+Après la lecture de ce billet de blog, vous aurez les bases pour construire des dashboard data
+et pour scrapper vos propres sources de données pour les exposer 🚀.
 
-Let's go !
+C'est parti !
 
 ## Intro
 
-I do not take my car often, but when I do, I always have a dilemna when it comes to fill it at the gas station.. 🤨
+Je ne prends pas souvent ma voiture (l'avantage du réseau francilien de transports en commun), mais quand je dois le faire,
+il me vient toujours un grand dilemme. Avec la multiplicité des stations essences autour de chez moi, et la volatilité
+des prix à la pompe ces derniers temps, comment choisir systématiquement la moins chère..? 🤨
 
-In France 🇫🇷, we have public APIs exposing price of gas stations each day. However the website is very clunky and there is no
-way to store your favorite gas stations.
+En France 🇫🇷 nous avons l'opprotunité d'avoir des APIs publiques maintenues par des services gouvernementaux.
+Malheureusement, le site web ne fait qu'exposer les prix et ne permet pas de sauvegarder des stations préférées.
 
-So each time I had to fullfill my gas tank, I had to grab price of surrounding stations. Not so efficient.. 😓
+À chaque fois que je devais faire le plein, il fallait alors venir lister les prix de chaque station sur le site,
+pas vraiment optimisé pour les mobiles.. 😓
 
-A few years ago, as I was getting hands on Docker, my Raspberry Pi and Flask, I had the idea to expose a minimal web
-page with my own stations. The backend was efficient, but in no way evolutive.
+Il y a quelques années, après avoir Dockerizé 2 / 3 choses sur ma Raspberry PI à la maison, et m'être un peu fait la main
+sur Flask, j'avais exposé un site très très minimal qui affichait les prix. Le backend était un peu sale (tout était hardcodé),
+mais efficace. Par contre aucun moyen de faire évoluer l'app..
 
-Furthermore, my friends and relatives had no hability to enjoy the dashboard as there were no ability to add new stations, or
-add users.
+Quand je montrais l'app à mes proches et mes amis, à chaque fois je leur disais qu'il m'était impossible de leur créer leur propre
+liste de stations, à mon grand désarroi..
 
-Hence, my new idea was pretty clear : create a web exposed dashboard, using solo Free Tier so that anyone could create an account,
-pick his own station and make savings on his gas bill !
+L'idée a donc germé, mon nouvel objectif de projet était très clair : créer un dashboard exposé sur le web, en open source, avec
+uniquement du free-tier. Ce dashboard devait pouvoir être accessible par n'importe qui, et on devait pouvoir y créer son compte,
+gérer ses listes de stations et surtout faire des économies sur le carburant.
+
+_PS : D'ailleurs, l'énergie la moins chère reste toujours celle qu'on ne consomme pas, prenez votre vélo ou votre paire de jambes
+dès que possible, c'est bon pour votre corps, votre esprit et pour la planète !_
 
 {{<figure src="frontpage.png" caption="Landing page of the developed dashboard" >}}
 
-## Extracting price data
+## Extraire les données Open Data des prix en France
 
-First, as on every data engineering, the cornerstone of the project will be the availability of the data.
+Pour commencer, comme dans tout projet de Data Engineering et de BI,
+la pierre angulaire du travail à effectuer réside dans nos données.
 
-To scrap and retrieve all gas stations price, we will use an Open Data platform which makes available this
-data, every day.
+Cette donnée doit être disponible, et de qualité. Travaillons en premier sur cet aspect.
 
-The format is pretty simple, it's not an API but a zipped flat file, containing XML data about all the stations in France, updated
-with their prices.
+Pour scrapper et récupérer notre donnée,i.e. les prix à la pompe, nous utiliserons la nouvelle
+plateforme d'Open Data mise en oeuvre pas les sercives gouvernementaux français platform. Un flux quotidien y est maintenu,
+et de relativement bonne qualité.
 
-Here is an extract of the file to demonstrate the format :
+Le format est relativement simple, cela ne consiste pas en une API Rest comme rencontré classiquement, mais en un fichier
+XML exposé sur une URL. Toutes les données de prix, de localisation et de dates de mises à jour y sont contenues.
+
+Voici ci-dessous un extrait du fichier afin d'illustrer le format de donnée :
 
 ```xml
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
@@ -87,53 +100,75 @@ Here is an extract of the file to demonstrate the format :
 </pdv_liste>
 ```
 
-First of all, a good news is that our gas stations, identified by an XML element `pdv` (which stand for 'point de vente' in French,
-a sales point) are given an unique Id.
+Le premier point qui saute aux yeux d'un Data Eng aguerris sera la bonne nouvelle concernant la manière
+de représenter les données de stations. Elles y sont toutes listées par un objet XML bien défini, `pdv` (l'acronyme de
+point de vente), qui se paie le luxe d'avoir un indentifiant unique. Cela est un bon présage pour la réconciliation
+de donnée à chaque update, même si rien ne présume quant à l'évolution du schéma de donnée.
 
-Furthermore, we can see that latitude and longitudes are provided on our stations, which will make perfect for a
-display on a map.
-Additionally, a list of element `prix` are providing somes prices and date of last update, for the related gas station.
-Some data will not be leveraged, as will not be useful for the exposed dashboard, for instance opening hours, services provided by
-the station, etc..
+C'est d'ailleurs le côté négatif de la représentation par fichier, avec une API et une version, les Standard OpenAPI permettent
+de facilement voir les évolutions. Ici ce sera quand le script hurlera d'erreurs dans tous les sens (au mieux) quand les
+incompatibilités nous apparaîtrons..
 
-Let build up some entities based on the information we can gather in this flat file, and also some information about users.
+Deuxième point rassurant, la latitude et la longitude des stations sont fournies ! C'est parfait afin de pouvoir
+représenter les stations sur une carte. Pas besoin de s'embêter avec du Géo-encodage, ou de la réconciliation d'adresse.
+J'ai toujours trouvé les cartes plus intuitives dans ces cas-là.
 
-### Managing users
+Enfin, nous retrouvons l'objet principal de ce que nous cherchons dans le champ `prix` :
 
-To manage user, password and accounts, we will use a simple user table, using solely mail, name and username. All the details of encrypted
-passwords and JWT are managed by an external Streamlit library [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
+- Une liste de prix pour les types de carburants fournis par la station, ainsi que la date de dernière mise à jour.
+- Également la liste des services proposés par la station (lavage, automate 24/24). À noter, mais à priori nous ne nous en servirons pas dans le projet. Laissons ça pour un autre developpeur qui pourra développer 'Find My CarWash' :)
 
-In order to mirror each users loaded by this library, this table will be populated by records in the library, but not any credentials.
+Construisons désormais des entités et des associations entre elles, sur la base de ce que nous avons pu trouver
+dans ce fichier de données. Nous y ajouterons les informations contextuelles dont nous avons besoin dans le cadre du projet :
+des utilisateurs par exemple..
 
-Unfortunately, in the way I was thinking using it, the initial library had a major security flaw. In fact, if you would like to reset a
-password for a user, anyone could do it...
+### Gestion de la base d'utilisateurs
+
+Pour gérer les utilisateurs, la création de comptes avec mots de passe, d'emails, nous définirons une table très simple.
+Elle va ne contenir que les emails, noms et pseudos des utilisateurs. Tous les détails de chiffrement, de token d'authentification JWT
+seront managés par une libraires externe au référentiel de donnée de l'application [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
+
+L'idée sera simplement de réfléter les utilisateurs référencés par cette librairie, et d'ajouter ceux-ci à la table mentionnée précedemment.
+Pour éviter de manipuler en base des choses sensibles comme des mots de passe (même chiffrés avec un système conventionel de hash et de salt),
+aucune association ne sera faite dans la base de donnée. Appliquons l'idée de _least priviledge_, et ici rien n'indique le besoin d'avoir
+l'accès aux mots de passe.
+
+Malheureusement, dans la manière d'utiliser cette libraire, le fonctionnement classique exposerait chaque utilisateur à
+un risque de sécurité.
+En effet, en cas d'oubli de mot de passe, la seule option qui est proposée consiste à réinitialiser le mot de passe. Donc n'importe qui
+pourrait demander la ré-initialisation de celui-ci.
 
 ![password](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNG1lc2Q0ZjY5azV5aHQzcm9vZWpxZzFsdWdrcHRnMDZiN3dieXh1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0G17mcoGBEabVgn6/giphy.gif#center)
 
-To ensure that the user which is triggering
+Afin de coontourner ce risque, l'idée mise en place a été d'utiliser le système de mail pour envoyer un code vérification
+envoyé par mail à l'utilisateur. Si ce code correspond à ce qui a été envoyé, alors il peut recevoir un nouveau mot de passe par le
+biais de cette adresse mail.
 
-A table containing verification codes that would be sent to reset password
+Le stockage de cette logique applicative sera fait dans une table dédiée, contenant les dates de génération (afin de gérer l'expiration),
+ainsi que les codes de vérification envoyés.
 
-### Managing Stations and Prices
+### Gérer les stations essences recensées et les prix
 
-To let users create somes customized stations, a table `Custom_stations` will be derived from table `Stations`.
-Each instance of a `Price` item will be associated to a Station. And a price will be associated also to a type of
-gas, i.e. is it diesel, unleaded, ethanol derived fuel..
+Pour permettre aux utilisateurs de créer une liste de stations essence personnalisées, une table `Custom_station` sera dérivée de la
+`Stations`.
+Chaque instance de l'objet `Price` sera associé à une station. Et un prix aura évidemment son association avec un type de carburant.
+C'est à dire qu'il pourra être défini comme un diesel, un essence SP95, E10, E85, GPLc...
 
-In order to track which gas type the user would like to be subscribed, an association table will be declared to link a
-user to a gas type.
+Pour que les utilisateurs puissent choisir quels types de carburant les intéressent, une table d'association doit être déclarée.
+Elle marque le lien au niveau de l'ORM `SQLAlchemy` entre un utilisateur et un type de carburant, de la table `gas_types`
 
-Here is a diagram of all the entities and the association (1:1 or Many to One are not represented,
-but PK and FK are, and should be enought to read it).
+Ci-dessous, un diagramme avec toutes les entités et les associations permet de résumer les objets de notre modèle de donnée.
+Les types d'association (1:1 / Many to One) ne sont pas représentés, mais l'ajout des clés primaires et étrangères est indiqué.
+Cela devrait être suffisant pour lire le diagramme et comprendre les principales relations.
 
 ![EA](EA_GasStations.png#center)
 
-### Mirroring theses entities using an ORM
+### Déclarer ces entités dans un ORM
 
-In order to conveniently use all theses tables, we will declares `Sqlalchemy` classes and link them using the new version declarative
-implementation.
+Afin d'utiliser facilement toutes ces tables, nous allons déclarer les classes `SQLAlchemy` et les relier entre elles. Pour faire
+cela nous allons utiliser la version 2 de cette librairie Python, avec l'implémentation déclarative.
 
-Here is the declaration of the previously mentionned classes, stored into a `models.py`
+Voici la déclaration de ces différentes classes, sous le module `models.py` de notre application
 
 ```python
 from typing import List
@@ -257,13 +292,11 @@ class Price(Base):
     price = sa.Column(sa.Float, nullable=False)
 ```
 
-Fair enough !
+Bien ! Et comment utiliser ces différentes classes dans notre application Streamlit ?
 
-How to bind this with our streamlit app ?
+Rien de plus compliqué que d'instancier un objet de type `Session` !
 
-Nothing more complicated than instanciating a session !
-
-Let's deep dive a litlle bit into the code :
+Voici comment déclarer cela sous le module `session.py` :
 
 ```python
 import logging
@@ -342,41 +375,56 @@ if database_creation:
     create_gastypes(db_session=db_session)
 ```
 
-What's happening here is very simple, at the loading of the app, we do instanciante our app and session.
+Ces différentes lignes peuvent paraître complexes, mais si on les relis séquentiellement, c'est très simple
+à comprendre.
+Au démarrage de l'application, le module est initialisé par Python (puisqu'il est importé par `home.py`, le main de
+notre application). Une instanciation de session est donc effectuée :
 
-`engine = create_engine("sqlite:///db.sqlite3", pool_pre_ping=True)` will create the sqlalchemy engine.
+`engine = create_engine("sqlite:///db.sqlite3", pool_pre_ping=True)` va venir créer le moteur de l'ORM
+sqlalchemy.
 
-As we will be using a LRU cache, less frequent call will be made to the sqlalchemy engine.
-Python will use same output from function `get_session` more often.
+Comme nous allons utiliser un cache LRU, les appels seront moins fréquents à la base SQLite, les objets en cache seront
+réutilisés par les différents appels de l'application. Python réutilisera le même objet de sortie de la fonction
+`get_session` plusieurs fois, jusqu'à expiration du cache.
 
-What is this weird function `create_gastypes` ? If sqlalchemy detects that the Sqlite database is
-empty, it will trigger creation of the empty tables.
-But to properly work, our gas_type table has to be fed up with data from the specifications of the [Open Data API](https://www.prix-carburants.gouv.fr/rubrique/opendata/).
+Désormais, intéressons nous à cette étrange fonction `create_gastypes` ?
+Si SQLAlchemy détecte que la base SQLite est vide, sans les tables du schéma, alors il va déclencher la création de ces tables et
+du schéma associé dans le module `models.py`.
+Pour fonctionner correctement, notre table `gas_types` doit être alimentée avec la donnée du référentiel de l'[API Open Data](https://www.prix-carburants.gouv.fr/rubrique/opendata/).
+
+Ici aucun moyen de récupérer ça de manière automatique, il va falloir hardcoder ces valeurs, et prier pour que cela n'évolue pas sans prévenir
+dans le temps..
 
 ![specs](specs.png#center)
 
-That's all ! Every other module can call for a `db_session` from this module, and it'll do the trick 🚀
+Et c'est tout ! Tous les autres modules pourront effectuer des appels à l'objet `db_session` de ce module, et
+le tour est joué 🚀
 
-Now all our data warehouse is ready to be filled up with data, let's review the ETL process.
+Notre DataWarehouse/Entrepôt de donnée est prêt à recevoir la donnée de notre ETL, penchons-nous maintenant sur ce
+bloc d'architecture.
 
-_NB: I wont cover Streamlit-Authenticator related elements as they are well described in the GH documentation of the package,
-feel free to have a look to it, very convenient._
+_NB: Ici je ne couvrirais pas les éléments de Streamlit-Authenticator, ils sont très bien
+illustrés dans la documentation GH du package, allez y jeter un oeil, c'est bien expliqué !_
 
-## Daily retrieval of data
+## Rafraîchissement quotidien de la donnée
 
-Let's sum up what do we have for now :
+Résumons ce dont nous disposons désormais :
 
-- A streamlit free workspace, which can retrieve data from a local sqlite file
-- A flat file with price data
-- An UI at [carburoam.streamlit.app](https://carburoam.streamlit.app/) which will display solely the streamlit
+- Un workspace Streamlit gratuit, qui peut récupérer quotidiennement de la donnée et la déposer dans une DB SQLite
+- Un fichier d'export exposé depuis une API Open Data publique
+- Une UI à l'adresse [carburoam.streamlit.app](https://carburoam.streamlit.app/) qui ne peut qu'exposer l'application Streamlit
+  (il faut malheureusement abandonner l'idée de pouvoir y brancher un `airflow`, `dagster` et compagnie..)
 
-Where is the ETL out here ?
+Donc où est caché notre ETL ici ? En effet, il manque une pièce centrale dans un projet de Data Engineering : l'outil
+d'orchestration des flux de traitements de donnée !
 
-Indeed, we miss a crucial part of a data engineering project : an orchestration tool. If I could have
-an airflow instance somewhere, I would definetely go for instanciating a simple DAG in here. But we do not
-have such element. So we will make something much simple.
+Si nous pouvions avoir une instance d'airflow quelque part, alors assurément nous pourrions répondre à ce problème avec
+ce genre d'outillage, mais il faut faire une croix dessus ici..
 
-### Pure python job orchestrator implementation
+Constuisons alors quelque chose de plus simple. Ce ne sera très résilient, mais à l'échelle du projet, ce
+sera amplement suffisant.
+
+### Orchestrateur de jobs en pur Python
 
 We will only leverage the main Python process of the streamlit app, and create a subprocess to run all the
 mecanism of update.

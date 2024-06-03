@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# if not first arg print usage
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <post-title>"
+  exit 1
+fi
+
 year=$(date '+%Y')
 month=$(date '+%m')
 

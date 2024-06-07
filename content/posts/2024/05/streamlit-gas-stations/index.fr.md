@@ -1,5 +1,5 @@
 ---
-title: "Économiser de l'argent,en créant un Dashboard Data de A à Z"
+title: "Créer un Dashboard + Data pipeline ETL de A à Z, et économiser de l'argent"
 cover:
   image: "cover.png"
   alt: "Carburoam Front Page"
@@ -27,6 +27,9 @@ afficher les prix personnalisés aux utilisateurs du site 📊.
 Après la lecture de ce billet de blog, vous aurez les bases pour construire des dashboard data
 et pour scrapper vos propres sources de données pour les exposer 🚀.
 
+Simple lecteur sans vélléité de dev ? Vous pourrez économiser à la pompe avec le dashboard 🤑 Et réinvestir le
+reste pour la [transition écologique](https://green-got.com/) 😇
+
 C'est parti !
 
 ## Intro
@@ -35,27 +38,32 @@ Je ne prends pas souvent ma voiture (l'avantage du réseau francilien de transpo
 il me vient toujours un grand dilemme. Avec la multiplicité des stations essences autour de chez moi, et la volatilité
 des prix à la pompe ces derniers temps, comment choisir systématiquement la moins chère..? 🤨
 
-En France 🇫🇷 nous avons l'opprotunité d'avoir des APIs publiques maintenues par des services gouvernementaux.
-Malheureusement, le site web ne fait qu'exposer les prix et ne permet pas de sauvegarder des stations préférées.
+En France 🇫🇷 nous avons l'opportunité d'avoir des APIs publiques maintenues par des services gouvernementaux.
+Malheureusement, le site web ne fait qu'exposer les prix et ne permet pas de sauvegarder ses stations préférées. 😭
 
 À chaque fois que je devais faire le plein, il fallait alors venir lister les prix de chaque station sur le site,
-pas vraiment optimisé pour les mobiles.. 😓
+pas vraiment optimisé pour les mobiles en plus.. 😓
 
-Il y a quelques années, après avoir Dockerizé 2 / 3 choses sur ma Raspberry PI à la maison, et m'être un peu fait la main
+Il y a quelques années, après avoir Dockerizé 2 / 3 choses sur ma Raspberry PI à la maison, et m'être fait un peu la main
 sur Flask, j'avais exposé un site très très minimal qui affichait les prix. Le backend était un peu sale (tout était hardcodé),
-mais efficace. Par contre aucun moyen de faire évoluer l'app..
+mais efficace. Par contre aucun moyen de faire évoluer l'app.. 💀
 
-Quand je montrais l'app à mes proches et mes amis, à chaque fois je leur disais qu'il m'était impossible de leur créer leur propre
-liste de stations, à mon grand désarroi..
+Quand je montrais l'app à mes proches et mes amis, réaction systématique de leur part : "Trop bien, je peux mettre mes stations à moi ?"
+Et moi de leur répondre, "Ah, euh non désolé, je ne peux mettre que les miennes pour l'instant" (à 2 doigts de lâcher
+un "fais un ticket stp", déformation professionelle 😇)..
+Et ce n'était pas par manque de volonté, mais littéralement le code était trop monolitique pour faire évoluer quoi
+que ce soit, à mon grand désarroi.. 🫠
 
-L'idée a donc germé, mon nouvel objectif de projet était très clair : créer un dashboard exposé sur le web, en open source, avec
+L'idée a donc germée, mon nouvel objectif de projet était très clair : créer un dashboard exposé sur le web, en open source, avec
 uniquement du free-tier. Ce dashboard devait pouvoir être accessible par n'importe qui, et on devait pouvoir y créer son compte,
-gérer ses listes de stations et surtout faire des économies sur le carburant.
+gérer ses listes de stations et surtout faire des économies sur le carburant. ⛽
 
 _PS : D'ailleurs, l'énergie la moins chère reste toujours celle qu'on ne consomme pas, prenez votre vélo ou votre paire de jambes
-dès que possible, c'est bon pour votre corps, votre esprit et pour la planète !_
+dès que possible, c'est bon pour votre corps, votre porte-monnaie, votre esprit et pour la planète !_ 🌱
 
-{{<figure src="frontpage.png" caption="Landing page of the developed dashboard" >}}
+{{<figure src="frontpage.png" caption="La page d'accueil du dashboard" >}}
+
+Le version live est dispo ici [https://carburoam.streamlit.app/](https://carburoam.streamlit.app/) ! 🚀
 
 ## Extraire les données Open Data des prix en France
 
@@ -64,9 +72,11 @@ la pierre angulaire du travail à effectuer réside dans nos données.
 
 Cette donnée doit être disponible, et de qualité. Travaillons en premier sur cet aspect.
 
-Pour scrapper et récupérer notre donnée,i.e. les prix à la pompe, nous utiliserons la nouvelle
-plateforme d'Open Data mise en oeuvre pas les sercives gouvernementaux français platform. Un flux quotidien y est maintenu,
+Pour scrapper et récupérer notre donnée, i.e. les prix à la pompe, nous utiliserons la nouvelle
+plateforme d'Open Data mise en oeuvre pas les sercives gouvernementaux français. Un flux quotidien y est maintenu,
 et de relativement bonne qualité.
+
+![francais](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExamRud3FicTkxdnloZHRkMWt1MXo4bms5bXcwcmo1NDQyeHc2aXZ3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KcFV1Hm2vFMAolcHbu/giphy-downsized.gif#center)
 
 Le format est relativement simple, cela ne consiste pas en une API Rest comme rencontré classiquement, mais en un fichier
 XML exposé sur une URL. Toutes les données de prix, de localisation et de dates de mises à jour y sont contenues.
@@ -100,9 +110,9 @@ Voici ci-dessous un extrait du fichier afin d'illustrer le format de donnée :
 </pdv_liste>
 ```
 
-Le premier point qui saute aux yeux d'un Data Eng aguerris sera la bonne nouvelle concernant la manière
-de représenter les données de stations. Elles y sont toutes listées par un objet XML bien défini, `pdv` (l'acronyme de
-point de vente), qui se paie le luxe d'avoir un indentifiant unique. Cela est un bon présage pour la réconciliation
+Le premier point qui saute aux yeux d'un Data Eng aguerri sera la bonne nouvelle concernant la manière
+de représenter les données de stations ! Elles y sont toutes listées par un objet XML bien défini, `pdv` (l'acronyme de
+point de vente), qui se paie le luxe d'avoir un indentifiant unique. Cela est d'un bon présage pour la réconciliation
 de donnée à chaque update, même si rien ne présume quant à l'évolution du schéma de donnée.
 
 C'est d'ailleurs le côté négatif de la représentation par fichier, avec une API et une version, les Standard OpenAPI permettent
@@ -126,9 +136,9 @@ des utilisateurs par exemple..
 
 Pour gérer les utilisateurs, la création de comptes avec mots de passe, d'emails, nous définirons une table très simple.
 Elle va ne contenir que les emails, noms et pseudos des utilisateurs. Tous les détails de chiffrement, de token d'authentification JWT
-seront managés par une libraires externe au référentiel de donnée de l'application [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
+seront managés par une libraire externe au référentiel de donnée de l'application [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
 
-L'idée sera simplement de réfléter les utilisateurs référencés par cette librairie, et d'ajouter ceux-ci à la table mentionnée précedemment.
+L'idée sera simplement de refléter les utilisateurs référencés par cette librairie, et d'ajouter ceux-ci à la table mentionnée précédemment.
 Pour éviter de manipuler en base des choses sensibles comme des mots de passe (même chiffrés avec un système conventionel de hash et de salt),
 aucune association ne sera faite dans la base de donnée. Appliquons l'idée de _least priviledge_, et ici rien n'indique le besoin d'avoir
 l'accès aux mots de passe.
@@ -136,7 +146,7 @@ l'accès aux mots de passe.
 Malheureusement, dans la manière d'utiliser cette libraire, le fonctionnement classique exposerait chaque utilisateur à
 un risque de sécurité.
 En effet, en cas d'oubli de mot de passe, la seule option qui est proposée consiste à réinitialiser le mot de passe. Donc n'importe qui
-pourrait demander la ré-initialisation de celui-ci.
+pourrait demander la ré-initialisation de celui-ci, sans l'aval de l'utilisateur concerné..
 
 ![password](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNG1lc2Q0ZjY5azV5aHQzcm9vZWpxZzFsdWdrcHRnMDZiN3dieXh1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0G17mcoGBEabVgn6/giphy.gif#center)
 
@@ -426,34 +436,45 @@ sera amplement suffisant.
 
 ### Orchestrateur de jobs en pur Python
 
-We will only leverage the main Python process of the streamlit app, and create a subprocess to run all the
-mecanism of update.
-It will only contains a Thread with a timer, which will trigger a task to update the prices.
+Pour déclencher nos jobs, nous allons uniquement nous baser sur le process Python principal, et créer un child-process, afin de déclencher tout
+le mécanisme d'update.
+Ce sous-process va contenir uniquement un Thread avec un timer, qui va déclencher quotidiennement une tâche afin de :
+
+1. Extraire le fichier depuis l'API Open Data
+2. Itérer sur les items exportés depuis le fichier pour les charger en base
 
 ![update](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY3R5dXFuMjI1MjI5ZXlrb3phazQydmg0cDFleGN3NWpucHJhM3dnbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/j3WJjjm1OKV73l6E6e/giphy.gif#center)
 
-It's kind of "Hello World" of a CRON job, let's review step by step how it's achieved :
+Techniquement, on pourrait presque appeler ça un bébé "Hello World" de job CRON. Voyons
+comment créer pas à pas, cet élément :
 {{<mermaid>}}
 flowchart TD
 U[User] -->|Load Landing Page| L{Streamlit app}
-L -->|pid.txt file </br> exists| PE[Do not trigger subprocess]
-L -->|pid.txt file doesn't </br> exists| PN[Read last job execution]
-PN -->|lastjob.txt file </br> exists| LE[Check current date]
-LE -->|delta between last execution </br> less than threshold| LT[Do not trigger subprocess]
-LE -->|delta between last execution </br> more than threshold| MT[Trigger subprocess </br> and delete logs older than 1 day]
-PN -->|lastjob.txt file doesn't </br> exists| LN[Trigger subprocess </br> and delete logs older than 1 day]
+L -->|Le fichier pid.txt </br> existe| PE[Déclencher le subprocess]
+L -->|Le fichier pid.txt n'</br> existe pas| PN[Lire la dernière date d'exécution]
+PN -->|Le fichier lastjob.txt </br> existe| LE[Vérifier la date courante]
+LE -->|delta entre la dernière exécution </br> moins que le seuil| LT[Ne pas déclencher le subprocess]
+LE -->|delta entre la dernière exécution </br> plus que le seuil| MT[Déclencher le subprocess </br> et suppression des logs plus vieux que la veille]
+PN -->|le fichier lastjob.txt n' </br> existe pas| LN[Déclencher le subprocess </br> et suppression des logs plus vieux que la veille]
 {{</mermaid>}}
 
-Is that all ? Pretty much, yes. Using the Database could make things a little
-bit more complex, so we will only check it the subprocess has created a file `pid.txt`,
-containing it's PID and another file, `lastjob.txt`, containing last execution job.
+Est-ce que cela suffit ? À peu près, oui !
+Nous aurions pu utiliser la DB afin de stocker ces événements, cela aurait simplement demandé d'avoir un watcher Python
+qui viendrait requêter la table périodiquement. Pour éviter une surcharge de la DB, une simple gestion par fichier
+remplace les marqueurs de completion.
+Nos 2 marqueurs se font avec :
 
-This way, it will not knock the database during development, when we have to redeploy often the app to test
-stuff. And if an ETL trouble occurs, we can kill the previous subprocess given it's PID and start a new one, by removing
-`pid.txt`.
+- `pid.txt` : contient le PID du job d'ETL avec le thread et son timer
+- `lastjob.txt` : contient la date de dernière exécution
 
-Additionally, To help a little bit during debugging, the stdout and stderr of the script
-will be routed to a text file, under a folder `outputs`.
+De cette façon, la base de donnée ne sera pas surchargée durant les développements. Un re-déploiment du code source
+de l'application ne déclenchera pas de job d'ETL supplémentaire si la dernière date est récente.
+
+Si un problème apparaît lors de l'ETL, nous pouvons tuer le subprocess via son PID et en démarrer un nouveau,
+en supprimant le fichier `pid.txt`.
+
+Afin d'assurer un minimum de maintenabilité durant le debugging, les flux stdout et stderr du script seront
+redirigés vers un fichier text, sous le dossier `outputs`.
 
 ```python
 import logging
@@ -519,16 +540,17 @@ def trigger_etl():
             st.session_state["lastjob"] = date
 ```
 
-This way we can get a nice metric :
+De cette façon nous pouvons avoir une bonne métrique affichant la date de dernier job d'extraction
 
 ![metric_date](metric_date.png#center)
 
-_NB: The sys.executable is very important to be sure that we are using the same Python executable
-than streamlit app, with all dependencies installed. Using python directly could cause unexpected bugs_
+_NB: L'élément sys.executable est très important pour s'assurer que l'executable Pyhton utilisé
+est le même que celui utilisé par l'application Streamlit, celle de l'environnement virtuel où toutes
+les dépendances y sont installés. Utiliser directement `python` pourrait causer des bugs_
 
-How about the timed thread implementation ?
+Qu'en est-il de l'implémentation du thread avec timer ?
 
-Pretty simple too :
+Plutôt simple aussi :
 
 ```python
 import os
@@ -606,94 +628,115 @@ if __name__ == "__main__":
     etl_job()
 ```
 
-The main routine is under the function `etl_job` which was previously called.
-We use a double security check, to verify if the PID file is not created already (with concurrency, multiples users could
-try to load the page).
+La routine principale est implémentée sous la fonction `etl_job` qui était précédemment importée.
+Ici, une double vérification est utilisée, pour vérifier que le fichier PID n'a pas déjà été créé (avec la
+concurrence, une multitude d'utilisateurs pourrait essayer de lancer la page d'accueil en même temps).
 
-We get the signal handlers to do some cleanup when the process receive the termination signal from the parent process (i.e. the app
-is shutdown).
+Les "signals handlers" permettent de faire un nettoyage des éléments (le `pid.txt` notamment) lorsque le signal SIGTERM est reçu du
+process parent. C'est à dire que dès que l'application est arrêtée, alors le thread lancera le nettoyage.
 
-Then we start the timer and launch an infinite loop until an Exception is raised by signal handler.
-This way the script will remove the pid file before exiting.
+Ensuite, nous démarrons le timer et lançons une boucle infinie, jusqu'à qu'une Exception soit levée par le
+"signal handler".
+De cette manière, le script supprime le fichier PID.
 
 ![cleanup](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzdtM2RvcHc2ZTlza2RkeGk3eDI1ZTVndHRvb2IwNDF4c3ZsZWs5aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2Je9c6EJAuE7mYMM/giphy.gif#center)
 
-Good ! Now we have a full ETL to load into the database the last prices exposed on the French API.
+Parfait ! Nous avons désormais notre système d'ETL pour charger en base les
+différents prix exposés sur l'API gouvernementale.
 
-Let's craft a nice dashboard so that users can :
+Construisons un dashboard ergonomique, afin que les utilisateurs puissent :
 
-- A main page, with a price dashboard showing price list and redirection to other pages of the app
-- Login into the website, retrieve their password / login if they forgot it automatically
-- Modify, Update and Delete their profile, giving full control over it (RGPD), on users fields (mail, name..) and gas related details (gas types)
-- Pick some stations to add to their dashboard
+- Consulter la page principale, avec une liste des prix triés par stations et valeurs, ainsi que la redirection vers les autres pages
+- Se connecter au site web, recevoir leur mot de passe, nom d'utilisateur automatiquement s'ils l'ont oublié
+- Modifier, Ajouter et Supprimer leur profile utilisateur, en leur donnant le contrôle total dessus (RGPD compliant) sur les champs
+  utilisateurs (email, nom) et les types de carburants préférés.
+- Choisir de nouvelles stations à ajouter/supprimer de leurs stations favorites
 
-As a bonus :
+En bonus :
 
-- An about page, in order to show help informations
-- A nice sidebar to give a professionnal look to the app, thanks to this <cite>open source app[^1]</cite>, where I borrowed the
-  UI design of the sidebar.
+- Une page d'informations, pour montrer un guide d'utilisation
+- Une barre de navigation verticale qui donne un style très professionnel, grâce à une base inspirée de cette <cite> app open source[^1]</cite>,
+  avec l'UI de la barre verticale.
 
 [^1]:
-    A nice pdf-editing [app](https://github.com/SiddhantSadangi/pdf-workdesk) made by Siddhant Sadangi, have a look to
-    his other apps on GH, they are amazing !
+    Une [app](https://github.com/SiddhantSadangi/pdf-workdesk) développée par Siddhant Sadangi, un streamlit Granmaster. Allez jeter un oeil à ses autres applications
+    sur Github, elles sont trop cools !
 
-## Designing the UI
+## Fabrication et design de l'UI
 
-### Home page
+### Page d'accueil
 
-The home page needs to behave differently, wether the user is logged in or not. Based on this assumption, the goal will be
-different. Let's review them step by step.
+La page d'accueil doit se comporter différement le statut de l'utilisateur, selon si l'utilisateur est loggé ou non loggé.
+Sur la base de cette connaissance, l'UX doit être différente.
+Voyons étape par étape comment construire une UX cohérente.
 
-#### Unlogged users
+#### Utilisateurs non loggés
 
-For newcomers, the main ideas are :
+Pour les nouveaux arrivants, les idées principales sont :
 
-1. To provide a way to create an account on the platform
+1. Fournir en première intention une manière de créer un compte sur la plateforme
    ![welcome](app_ui/welcome.png#center)
-2. View a demo of the dashboard. I would never create an account on something I can't see before, so adding this option is a real bonus.
+2. Proposer de voir une démo du dashboard. Personnellement, je ne me vois pas créer un compte sur quelque chose dont je ne peux pas voir la valeur
+   ajoutée (achat, personnalisation ou autre valeur ajoutée par une app !). Ajouter une page démo me semble donc un vrai bonus, si ce n'est quasi-obligatoire !
    ![demo](app_ui/demo.png#center)
-3. Show an about page in order to let user have a look about this app
+3. Montrer un page explicative à propos de l'application, et laisser l'utilisateur comprendre, explorer un peu les insights de l'application.
+   Pour les développeurs, c'est aussi ici que le lien vers le repo Open Source est dispo !
    ![about](app_ui/about.png#center)
 
-#### Logged users
+#### Utilisateurs connectés
 
-For logged users, the main purpose are, if I put myself into a user shoes, by order of priority :
+Pour les utilisteurs qui ont créé un compte et qui se sont connectés sur l'application, si je me mets à leur place, j'aimerais,
+(par ordre de priorité):
 
-1. The ability to get an instant glimpse of price of my favorites stations, sorted by ascending price.
+1. Pouvoir rapidement repérer les prix de mes stations enregistrées, et identifier le moins cher
    ![pricelist](app_ui/pricelist.png#center)
-2. Be able to get information about the freshness of the data
+2. Être capable de savoir de quand date le rafraîchissement du prix pour chaque station, et de l'extract complet
    ![lastdate](app_ui/lastdate.png#center)
-3. Get the approximative idea of the expected annual savings using this dashboard, to act like an incentive
+3. Me faire une idée de ce que me permet de gagner l'utilisation du dashboard, pour engager à l'utiliser (nudge)
    ![savings](app_ui/savings.png#center)
-4. Get an overview of the other pages purposes and abilities, to customize profile and so on
+4. Rapidement avoir un tour d'horizon de ce que me permet de faire le dashboard en termes de customisation de profil, stations..etc
    ![pages](app_ui/pages.png#center)
 
-#### Admin user
+### Console d'administration
 
-For the admin user, a landing page shall provide : 5. Insight about app engagement
-![admin](app_ui/admin.png#center) 6. Some management option to handle operation for users (password resets, ETL refresh if fails..)
-![admin_actions_1](app_ui/admin_actions_1.png#center)
-![admin_actions_2](app_ui/admin_actions_2.png#center)
+Pour les besoins d'administration, la console de l'application web doit pouvoir fournir :
 
-As this page will be accessible to _admin_ user only, no sensitive data will be exposed.
+5. Quelques données à propos du traffic de l'app, son taux d'utilisation, d'adoption
+   ![admin](app_ui/admin.png#center)
+6. Des options de gestion d'opérations pour les utilisateurs, pour les besoins de support (réinitialisation de
+   mot de passe, refresh des jobs ETL et monitoring des logs locaux, possibilité de lancer du code shell)
+   ![admin_actions_1](app_ui/admin_actions_1.png#center)
+   ![admin_actions_2](app_ui/admin_actions_2.png#center)
 
-By bundling all theses stuffs into a single app, deploy it on Streamlit Cloud, we have a live running web app !
+Grâce au système d'authentification, il est possible de restreindre l'accès à ce dashboard uniquement à l'utilisateur
+_admin_. Ainsi, aucune donnée sensible ne pourra être exfiltré par un utilisateur malicieux.
+
+En packagant toutes ces pages, les différents modules utilitaires pour les jobs d'ETL, et en
+déployant le code sur un repo Github, nous avons une application Streamlit en live sur le cloud !
+
+Tout est hosté par Streamlit, aucune prise de tête !
 
 ![tree](tree.png#center)
 
-## Keep the app alive and DB
+## Garder l'application active et le fichier DB local
 
-As it has been explained previously, the DB will bootstrap user objects from S3 storage. However,
-the customized stations are only visible in the SQLite DB.
+Comme nous l'avons revu auparavant, la database SQLite va bootstrapper les différentes instances de `Users`
+sauvegardées dans le fichier d'authentification, sauvegardé sur le stockage AWS S3.
 
-To ensure the application doesn't enter into sleeping mode, some mecanism has to be setup in order
-to produce traffic on the app.
+Par contre, les instances `Stations`, `Price` et `CustomStation` ne sont visibles que depuis la DB SQLite.
+Il y a donc un risque, si jamais nous perdons le fichier SQLite (en cas de reboot de l'environnement Streamlit par exemple, il
+est explicitement mentionné que Streamlit ne garantit pas la persistance des DB locales).
+
+Pour éviter que l'application tombe en mode veille et que l'orchestrateur de Streamlit décommissionne intempestivement le conteneur,
+la VM ou le serveur où tourne l'application, il faut assurer un traffic minimal sur l'app pour empêcher cette éventualité.
 
 ![sleeping](sleeping.png#center)
 
-To do this, I borrewed a nice Github action from another very cool made also by a French developer, <cite>Jean Milpied[^2]</cite>
+Afin d'être au dessus du seuil minimal d'une visite toutes les 48H (seuil actuel défini par Streamlit),
+j'ai emprunté et modifié une Github Action d'une autre application très très cool, développée par <cite>Jean Milpied[^2]</cite>
+un Data Scientist Français également !
 
-Here is the Github Action YAML file :
+Voici le fichier YAML Github Action :
 
 ```yaml
 name: Trigger Probe of Deployed App on a CRON Schedule
@@ -718,7 +761,8 @@ jobs:
         run: docker run --rm my-probe-image
 ```
 
-The probe action is a JavaScript script ran by puppeteer:
+L'action qui va sonder si l'application est off ou non est un script JavaScript,
+exécuté par Puppeteer:
 
 ```js
 const puppeteer = require("puppeteer");
@@ -766,7 +810,7 @@ console.log(process.version);
 })();
 ```
 
-The script is triggered using a Docker Image of puppeteer :
+Le déclenchement est effectué via une image Docker de Puppeteer :
 
 ```Dockerfile
 # probe-action/Dockerfile
@@ -776,22 +820,44 @@ ENTRYPOINT [ "/bin/bash", "-c", "node -e \"$(</home/pptruser/src/probe.js)\"" ]
 ```
 
 [^2]:
-    Another nice app, showing some BI information about the chance you have to repair your devices. Have a look
-    for the probe action [here](https://github.com/JeanMILPIED/reparatorAI/tree/main/probe-action), and deep dive the
-    blog post provided by [David Young](https://dcyoung.github.io/post-streamlit-keep-alive/).
+    Une autre app sympa, donnant des informations à la sauce BI avec les probabilités de réparer son appareil
+    domestique. L'app a récemment eu raison sur ma dernière machine à espresso manuelle 😃 Jetez un oeil
+    [ici](https://github.com/JeanMILPIED/reparatorAI/tree/main/probe-action) pour le déclenchement de l'app, et
+    vous pourrez creuser le blog originel de l'idée ici initialement crée par
+    [David Young](https://dcyoung.github.io/post-streamlit-keep-alive/).
 
-Using this technic, every 48 hours, the script will trigger a probe action and ensure the app stays up.
-However, the current downside of current version, is the lack of ability to make Green/Blue deployments, meaning that
-if the current Streamlit service fails, the app is deployed again elsewhere without the saved Sqlite DB.
+Avec cette technique, toutes les 48 heures, le script va venir sonder l'application à l'url fournie (la page d'accueil) et
+donc s'assurer que l'app est up (sinon il va cliquer sur le boutton _Wake Up_)
 
-Some backup mecanism could be set up, but at this point, using SQlite might be uneffective.
+Actuellement, le seul élément qui manque à la version actuelle serait la possiblité de faire des déploiement en
+Green/Blue (avec une base tampon qui charge les anciennes données, pendant que la base couramment utilisée après
+le refresh n'est pas trop sollicitée par un hard refresh).
+En effet, vous l'aurez compris, actuellement si l'application crash ou bien que le serveur est décommissionné (
+ce qui est probable, j'image que Streamlit doit mettre les app sur des SpotInstances pour ne pas faire exploser la facture
+). J'ai déjà expérimenté plusieurs reboot de l'app depuis son déploiement en phase _beta_, donc c'est un risque.
+
+En effet, on perd la DB, mais instaurer un système Green/Blue va bien au delà de la stack technique actuelle, c'est un peu
+overkill pour le projet.
+Je me note seulement pour le futur de faire un petit script de restauration sauvegarde et de restauration de la DB depuis son dernier
+bootstrap pour le futur. Avec le S3 cela ne devrait pas être bien sorcier, et surtout que nous ne souhaitons garder que les
+`CustomStation` et les `Followed GasTypes`.
 
 ## Conclusion
 
-Streamlit is a very versatile tool, giving the possibility to :
+Streamlit est un outil extrêmement polyvalent, qui donne la possiblité de
 
-- craft a small app, with a cool and responsive UI
-- with some hacks, build up a small ETL to give some daily updates to the data exposed. Do not take it as a
-  production battle tested feature, but for some fun side projects, it will be enough.
+- Crafter une petite application, avec une UI rapidement sympa, et à peu près responsive, et déjà en soit c'est dingue.
+- Avec quelques hacks, on peut construire un ETL basique pour rafraîchir automatiquement la donnée qui est exposée. A
+  ne pas considérer comme un système de PROD, c'est un peu cracra, mais ça marche et ça tourne à peu près. Pour un petit
+  projet fun, c'est amplement suffisant.
 
-Make sure your are giving a well designed data schema, in order to retrieve the maximum performances from your ORM.
+Dans tout projet Data, assurez-vous d'avoir un schéma de donnée cohérent et évolutif. Construire ensuite votre front et la
+logique de l'application n'en sera que diablemenet plus simple et efficace.
+
+En plus d'avoir des objets d'ORM élégants..
+
+Un grand ❤️ aux différents développeurs qui ont open-sourcé leurs apps([pdf-workdesk](https://pdfworkdesk.streamlit.app/),
+[reparatorAI](https://reparatorai.streamlit.app/), librairies ([Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator/)),
+sans eux le travail aurait été plus complexe, voir même, disons-le impossible. Allez leur mettre des 🌟, ça leur fera le plus grand plaisir !
+
+Il en va de même aux équipes de Streamlit et la possiblité de déployer gratuitement nos dashboards. Merci !

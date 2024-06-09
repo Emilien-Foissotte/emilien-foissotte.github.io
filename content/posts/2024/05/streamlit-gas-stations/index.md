@@ -20,10 +20,10 @@ data engineering project ⚙️ .
 
 The idea will be to retrieve a price list of gas stations in France ⛽,
 create a job to extract it every day 📅 and craft a dashboard to expose those price to
-logged user 📊.
+logged user 📊
 
 After reading this blog post, you'll have fundamentals on how to build data
-dashboard and scrap your own data sources 🚀.
+dashboard and scrap your own data sources 🚀
 
 Just a reader not interested into the technicals details ? Have a look to the dashboard,
 you'll save on the gas bill 🤑 And reinvest the remainings into ecological transition towards
@@ -38,12 +38,13 @@ I do not take my car often, but when I do, I always have a dilemna when it comes
 In France 🇫🇷, we have public APIs exposing price of gas stations each day. However the website is very clunky and there is no
 way to store your favorite gas stations. 😭
 
-So each time I had to fullfill my gas tank, I had to grab price of surrounding stations. Not so efficient.. 😓
+So each time I had to fullfill my gas tank, I had to grab price of surrounding stations, on a mobile UI unfriendly website.
+Not so efficient.. 😓
 
 A few years ago, as I was getting hands on Docker, my Raspberry Pi and Flask, I had the idea to expose a minimal web
 page with my own stations. The backend was efficient, but in no way evolutive. 💀
 
-Furthermore, my friends and relatives had no hability to enjoy the dashboard as there were no ability to add new stations, or
+My friends and relatives had no hability to enjoy the dashboard as there were no ability to add new stations, or
 add users. I was that close to tell them to open a ticket on the project board, just a casual job habit 😇. I wasn't lacking
 of motivation or time to do it, but the codebase was way too monolithic to make a few evolution possible, at all.. 🫠
 
@@ -117,7 +118,7 @@ Let build up some entities based on the information we can gather in this flat f
 ### Managing users
 
 To manage user, password and accounts, we will use a simple user table, using solely mail, name and username. All the details of encrypted
-passwords and JWT are managed by an external Streamlit library [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
+passwords and JWT are managed by an external Streamlit library : [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
 
 In order to mirror each users loaded by this library, this table will be populated by records in the library, but not any credentials.
 Let's apply the _least priviledge_ principle, there is absolutely no need for a hashed password storing in the DB here, so let's lighthen
@@ -364,8 +365,9 @@ if database_creation:
 ```
 
 What's happening here is very simple, at the loading of the app, we do instanciante our app and session (as it is imported by
-`home.py` module, the main of the application). A session instanciation is done :
+`home.py` module, the main of the application).
 
+A session instanciation is done :
 `engine = create_engine("sqlite:///db.sqlite3", pool_pre_ping=True)` will create the sqlalchemy engine.
 
 As we will be using a LRU cache, less frequent call will be made to the sqlalchemy engine.

@@ -17,14 +17,14 @@ TocOpen: false
 Dans ce billet de blog, nous allons voir comment créer de A à Z
 un projet de Data engineering, de l'ETL, la création de notre
 schéma de données, l'ORM de l'application, son backend et ensuite
-son déploiement avec Streamlit Cloud ⚙️ .
+son déploiement avec Streamlit Cloud ⚙️
 
 Le but est de récupérer la liste des prix de stations essence en France ⛽,
 automatiser un job qui va venir mettre à jour les valeurs quotidiennement 📅 et construire un dashboard pour
-afficher les prix personnalisés aux utilisateurs du site 📊.
+afficher les prix personnalisés aux utilisateurs du site 📊
 
 Après la lecture de ce billet de blog, vous aurez les bases pour construire des dashboard data
-et pour scrapper vos propres sources de données pour les exposer 🚀.
+et pour scrapper vos propres sources de données pour les exposer 🚀
 
 Simple lecteur sans vélléité de dev ? Vous pourrez économiser à la pompe avec le dashboard 🤑 Et réinvestir le
 reste pour la [transition écologique](https://green-got.com/) (gagnez 1 mois gratuit avec le code `emilien-foissotte`) 😇
@@ -62,7 +62,7 @@ dès que possible, c'est bon pour votre corps, votre porte-monnaie, votre esprit
 
 {{<figure src="frontpage.png" caption="La page d'accueil du dashboard" >}}
 
-Le version live est dispo ici [https://carburoam.streamlit.app/](https://carburoam.streamlit.app/) ! 🚀
+La version live est dispo ici [https://carburoam.streamlit.app/](https://carburoam.streamlit.app/) ! 🚀
 
 ## Extraire les données Open Data des prix en France
 
@@ -112,7 +112,7 @@ Voici ci-dessous un extrait du fichier afin d'illustrer le format de donnée :
 Le premier point qui saute aux yeux d'un Data Eng aguerri sera la bonne nouvelle concernant la manière
 de représenter les données de stations ! Elles y sont toutes listées par un objet XML bien défini, `pdv` (l'acronyme de
 point de vente), qui se paie le luxe d'avoir un indentifiant unique. Cela est d'un bon présage pour la réconciliation
-de donnée à chaque update, même si rien ne présume quant à l'évolution du schéma de donnée.
+de donnée à chaque update, même si rien ne présume quant à une stabilitée espérée du schéma de donnée.
 
 C'est d'ailleurs le côté négatif de la représentation par fichier, avec une API et une version, les Standard OpenAPI permettent
 de facilement voir les évolutions. Ici ce sera quand le script hurlera d'erreurs dans tous les sens (au mieux) quand les
@@ -135,7 +135,7 @@ des utilisateurs par exemple..
 
 Pour gérer les utilisateurs, la création de comptes avec mots de passe, d'emails, nous définirons une table très simple.
 Elle va ne contenir que les emails, noms et pseudos des utilisateurs. Tous les détails de chiffrement, de token d'authentification JWT
-seront managés par une libraire externe au référentiel de donnée de l'application [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
+seront managés par une libraire externe au référentiel de donnée de l'application : [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
 
 L'idée sera simplement de refléter les utilisateurs référencés par cette librairie, et d'ajouter ceux-ci à la table mentionnée précédemment.
 Pour éviter de manipuler en base des choses sensibles comme des mots de passe (même chiffrés avec un système conventionel de hash et de salt),
@@ -153,7 +153,7 @@ Afin de coontourner ce risque, l'idée mise en place a été d'utiliser le syst�
 envoyé par mail à l'utilisateur. Si ce code correspond à ce qui a été envoyé, alors il peut recevoir un nouveau mot de passe par le
 biais de cette adresse mail.
 
-Le stockage de cette logique applicative sera fait dans une table dédiée, contenant les dates de génération (afin de gérer l'expiration),
+Le stockage de cette logique applicative sera effectué dans une table dédiée, contenant les dates de génération (afin de gérer l'expiration),
 ainsi que les codes de vérification envoyés.
 
 ### Gérer les stations essences recensées et les prix
@@ -303,7 +303,7 @@ class Price(Base):
 
 Bien ! Et comment utiliser ces différentes classes dans notre application Streamlit ?
 
-Rien de plus compliqué que d'instancier un objet de type `Session` !
+Rien de bien compliqué, il nous suffit d'instancier un objet de type `Session` !
 
 Voici comment déclarer cela sous le module `session.py` :
 
@@ -387,8 +387,9 @@ if database_creation:
 Ces différentes lignes peuvent paraître complexes, mais si on les relis séquentiellement, c'est très simple
 à comprendre.
 Au démarrage de l'application, le module est initialisé par Python (puisqu'il est importé par `home.py`, le main de
-notre application). Une instanciation de session est donc effectuée :
+notre application).
 
+Une instanciation de session est donc effectuée :
 `engine = create_engine("sqlite:///db.sqlite3", pool_pre_ping=True)` va venir créer le moteur de l'ORM
 sqlalchemy.
 
@@ -396,12 +397,13 @@ Comme nous allons utiliser un cache LRU, les appels seront moins fréquents à l
 réutilisés par les différents appels de l'application. Python réutilisera le même objet de sortie de la fonction
 `get_session` plusieurs fois, jusqu'à expiration du cache.
 
-Désormais, intéressons nous à cette étrange fonction `create_gastypes` ?
-Si SQLAlchemy détecte que la base SQLite est vide, sans les tables du schéma, alors il va déclencher la création de ces tables et
+Désormais, intéressons nous à cette étrange fonction `create_gastypes`. Que fait-elle ?
+
+Si SQLAlchemy détecte que la base SQLite est vide, sans les tables du schéma, alors le moteur ORM va déclencher la création de ces tables et
 du schéma associé dans le module `models.py`.
 Pour fonctionner correctement, notre table `gas_types` doit être alimentée avec la donnée du référentiel de l'[API Open Data](https://www.prix-carburants.gouv.fr/rubrique/opendata/).
 
-Ici aucun moyen de récupérer ça de manière automatique, il va falloir hardcoder ces valeurs, et prier pour que cela n'évolue pas sans prévenir
+Ici aucun moyen de récupérer ces identifiants de manière automatique, il va falloir hardcoder ces valeurs, et prier pour que cela n'évolue pas sans prévenir
 dans le temps..
 
 ![specs](specs.png#center)
@@ -412,25 +414,25 @@ le tour est joué 🚀
 Notre DataWarehouse/Entrepôt de donnée est prêt à recevoir la donnée de notre ETL, penchons-nous maintenant sur ce
 bloc d'architecture.
 
-_NB: Ici je ne couvrirais pas les éléments de Streamlit-Authenticator, ils sont très bien
+_NB: Ici je ne couvrirais pas les éléments de Streamlit-Authenticator, ceux-ci sont très bien
 illustrés dans la documentation GH du package, allez y jeter un oeil, c'est bien expliqué !_
 
 ## Rafraîchissement quotidien de la donnée
 
 Résumons ce dont nous disposons désormais :
 
-- Un workspace Streamlit gratuit, qui peut récupérer quotidiennement de la donnée et la déposer dans une DB SQLite
+- Un workspace Streamlit gratuit, qui peut récupérer quotidiennement de la donnée et déposer les valeurs dans une DB SQLite
 - Un fichier d'export exposé depuis une API Open Data publique
 - Une UI à l'adresse [carburoam.streamlit.app](https://carburoam.streamlit.app/) qui ne peut qu'exposer l'application Streamlit
   (il faut malheureusement abandonner l'idée de pouvoir y brancher un `airflow`, `dagster` et compagnie..)
 
-Donc où est caché notre ETL ici ? En effet, il manque une pièce centrale dans un projet de Data Engineering : l'outil
+Donc où est caché notre ETL ici ? En effet, il nous manque une pièce centrale dans notre projet de Data Engineering : l'outil
 d'orchestration des flux de traitements de donnée !
 
 Si nous pouvions avoir une instance d'airflow quelque part, alors assurément nous pourrions répondre à ce problème avec
 ce genre d'outillage, mais il faut faire une croix dessus ici..
 
-Constuisons alors quelque chose de plus simple. Ce ne sera très résilient, mais à l'échelle du projet, ce
+Constuisons alors quelque chose de plus simple. Ce ne sera pas très résilient, mais à l'échelle du projet, considérons que ce
 sera amplement suffisant.
 
 ### Orchestrateur de jobs en pur Python
@@ -539,7 +541,7 @@ def trigger_etl():
             st.session_state["lastjob"] = date
 ```
 
-De cette façon nous pouvons avoir une bonne métrique affichant la date de dernier job d'extraction
+Avec la donnée de dernière exécution en cache, nous pouvons aussi avoir une bonne métrique affichant la date de dernier job d'extraction
 
 ![metric_date](metric_date.png#center)
 
@@ -677,17 +679,18 @@ Pour les nouveaux arrivants, les idées principales sont :
    ![welcome](app_ui/welcome.png#center)
 2. Proposer de voir une démo du dashboard. Personnellement, je ne me vois pas créer un compte sur quelque chose dont je ne peux pas voir la valeur
    ajoutée (achat, personnalisation ou autre valeur ajoutée par une app !). Ajouter une page démo me semble donc un vrai bonus, si ce n'est quasi-obligatoire !
-   ![demo](app_ui/demo.png#center)
+   ![demo1](app_ui/demo_1.png#center)
+   ![demo2](app_ui/demo_2.png#center)
 3. Montrer un page explicative à propos de l'application, et laisser l'utilisateur comprendre, explorer un peu les insights de l'application.
    Pour les développeurs, c'est aussi ici que le lien vers le repo Open Source est dispo !
    ![about](app_ui/about.png#center)
 
 #### Utilisateurs connectés
 
-Pour les utilisteurs qui ont créé un compte et qui se sont connectés sur l'application, si je me mets à leur place, j'aimerais,
-(par ordre de priorité):
+Pour les utilisteurs qui ont créé un compte et qui se sont connectés sur l'application,
+si je me mets à leur place, j'aimerais (par ordre de priorité):
 
-1. Pouvoir rapidement repérer les prix de mes stations enregistrées, et identifier le moins cher
+1. Pouvoir rapidement repérer les prix de mes stations enregistrées, et identifier le prix le moins cher
    ![pricelist](app_ui/pricelist.png#center)
 2. Être capable de savoir de quand date le rafraîchissement du prix pour chaque station, et de l'extract complet
    ![lastdate](app_ui/lastdate.png#center)

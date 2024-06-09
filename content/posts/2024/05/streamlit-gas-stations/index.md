@@ -26,6 +26,10 @@ logged user 📊.
 After reading this blog post, you'll have fundamentals on how to build data
 dashboard and scrap your own data sources 🚀.
 
+Just a reader not interested into the technicals details ? Have a look to the dashboard,
+you'll save on the gas bill 🤑 And reinvest the remainings into ecological transition towards
+[a carbon-free world](https://green-got.com/)(get 1 month for free with discount voucher `emilien-foissotte`) 😇
+
 Let's go !
 
 ## Intro
@@ -33,20 +37,26 @@ Let's go !
 I do not take my car often, but when I do, I always have a dilemna when it comes to fill it at the gas station.. 🤨
 
 In France 🇫🇷, we have public APIs exposing price of gas stations each day. However the website is very clunky and there is no
-way to store your favorite gas stations.
+way to store your favorite gas stations. 😭
 
 So each time I had to fullfill my gas tank, I had to grab price of surrounding stations. Not so efficient.. 😓
 
 A few years ago, as I was getting hands on Docker, my Raspberry Pi and Flask, I had the idea to expose a minimal web
-page with my own stations. The backend was efficient, but in no way evolutive.
+page with my own stations. The backend was efficient, but in no way evolutive. 💀
 
 Furthermore, my friends and relatives had no hability to enjoy the dashboard as there were no ability to add new stations, or
-add users.
+add users. I was that close to tell them to open a ticket on the project board, just a casual job habit 😇. I wasn't lacking
+of motivation or time to do it, but the codebase was way too monolithic to make a few evolution possible, at all.. 🫠
 
 Hence, my new idea was pretty clear : create a web exposed dashboard, using solo Free Tier so that anyone could create an account,
-pick his own station and make savings on his gas bill !
+pick his own station and make savings on his gas bill ! ⛽
+
+_PS : BTW, the cheapest energy will always be the one you will not consume. Take your bike or your legs when you can,
+that's better for your health, your wallet, your mind and for the planet!_ 🌱
 
 {{<figure src="frontpage.png" caption="Landing page of the developed dashboard" >}}
+
+Live version availabe here [https://carburoam.streamlit.app/](https://carburoam.streamlit.app/) ! 🚀
 
 ## Extracting price data
 
@@ -55,8 +65,10 @@ First, as on every data engineering, the cornerstone of the project will be the 
 To scrap and retrieve all gas stations price, we will use an Open Data platform which makes available this
 data, every day.
 
-The format is pretty simple, it's not an API but a zipped flat file, containing XML data about all the stations in France, updated
-with their prices.
+The format is pretty simple, it's not an API but a zipped dump file, containing XML data about all the stations in France, updated
+with their prices. On a daily basis, the platform updates it, and the quality is rather good !
+
+![francais](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExamRud3FicTkxdnloZHRkMWt1MXo4bms5bXcwcmo1NDQyeHc2aXZ3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KcFV1Hm2vFMAolcHbu/giphy-downsized.gif#center)
 
 Here is an extract of the file to demonstrate the format :
 
@@ -88,10 +100,15 @@ Here is an extract of the file to demonstrate the format :
 ```
 
 First of all, a good news is that our gas stations, identified by an XML element `pdv` (which stand for 'point de vente' in French,
-a sales point) are given an unique Id.
+a sales point) are given an unique Id. All the objects are well defined, nonetheless, a savage evolution of the format could happen.
 
-Furthermore, we can see that latitude and longitudes are provided on our stations, which will make perfect for a
-display on a map.
+That's the downside of using a file API, some Rest protocols ensure that the routes will not drastically evolve over time, without a
+major version increment. Here the only we will catch this evolution, will be when the ETL will broke..
+
+Anyway, there is still some good news on the record. We can see that latitude and longitudes are provided on our stations, which will make
+it perfect for a nice display on a map. I always have found, from a user perspective, that maps are better to pick some locations than
+streets nor towns names.
+
 Additionally, a list of element `prix` are providing somes prices and date of last update, for the related gas station.
 Some data will not be leveraged, as will not be useful for the exposed dashboard, for instance opening hours, services provided by
 the station, etc..
@@ -104,15 +121,19 @@ To manage user, password and accounts, we will use a simple user table, using so
 passwords and JWT are managed by an external Streamlit library [Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator).
 
 In order to mirror each users loaded by this library, this table will be populated by records in the library, but not any credentials.
+Let's apply the _least priviledge_ principle, there is absolutely no need for a hashed password storing in the DB here, so let's lighthen
+the data schema on this side.
 
 Unfortunately, in the way I was thinking using it, the initial library had a major security flaw. In fact, if you would like to reset a
-password for a user, anyone could do it...
+password for a user, anyone could do it. So anyone could reset another user password, without applying some confirmation mecanism.
 
 ![password](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNG1lc2Q0ZjY5azV5aHQzcm9vZWpxZzFsdWdrcHRnMDZiN3dieXh1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0G17mcoGBEabVgn6/giphy.gif#center)
 
-To ensure that the user which is triggering
+To ensure that the user which is triggering the password reset operation, we will send a confirmation code to the user by email,
+which he will have to enter to proceed into password reset finalization.
 
-A table containing verification codes that would be sent to reset password
+To store and enable this application logic, a table containing verification codes that would be sent to reset password has to be
+created. Password will never be stored, they will only be transmitted on the fly to the users by mail, upon reset.
 
 ### Managing Stations and Prices
 
@@ -121,19 +142,20 @@ Each instance of a `Price` item will be associated to a Station. And a price wil
 gas, i.e. is it diesel, unleaded, ethanol derived fuel..
 
 In order to track which gas type the user would like to be subscribed, an association table will be declared to link a
-user to a gas type.
+user to a gas type. This table creates a bounded link at the ORM `SQLAlchemy` level between a user and a type of fuel, from
+table `gas_types`.
 
-Here is a diagram of all the entities and the association (1:1 or Many to One are not represented,
+Here is bellow a diagram of all the entities and the association (1:1 or Many to One are not represented,
 but PK and FK are, and should be enought to read it).
 
 ![EA](EA_GasStations.png#center)
 
 ### Mirroring theses entities using an ORM
 
-In order to conveniently use all theses tables, we will declares `Sqlalchemy` classes and link them using the new version declarative
+In order to conveniently use all theses tables, we will declares `SQLAlchemy` classes and link them using the version `2` declarative
 implementation.
 
-Here is the declaration of the previously mentionned classes, stored into a `models.py`
+Here is the declaration of the previously mentionned classes, stored into a `models.py` module of our application.
 
 ```python
 from typing import List
@@ -261,9 +283,9 @@ Fair enough !
 
 How to bind this with our streamlit app ?
 
-Nothing more complicated than instanciating a session !
+Nothing more complicated than instanciating a `Session` type object !
 
-Let's deep dive a litlle bit into the code :
+Let's deep dive a little bit into the code, under `session.py` module of the app :
 
 ```python
 import logging
@@ -342,18 +364,21 @@ if database_creation:
     create_gastypes(db_session=db_session)
 ```
 
-What's happening here is very simple, at the loading of the app, we do instanciante our app and session.
+What's happening here is very simple, at the loading of the app, we do instanciante our app and session (as it is imported by
+`home.py` module, the main of the application). A session instanciation is done :
 
 `engine = create_engine("sqlite:///db.sqlite3", pool_pre_ping=True)` will create the sqlalchemy engine.
 
 As we will be using a LRU cache, less frequent call will be made to the sqlalchemy engine.
-Python will use same output from function `get_session` more often.
+Python will use same output from function `get_session` more often, until the cache expires.
 
 What is this weird function `create_gastypes` ? If sqlalchemy detects that the Sqlite database is
 empty, it will trigger creation of the empty tables.
 But to properly work, our gas_type table has to be fed up with data from the specifications of the [Open Data API](https://www.prix-carburants.gouv.fr/rubrique/opendata/).
 
 ![specs](specs.png#center)
+
+No way to create a smart logic here, so let's hardcode them, and hope that they will not evolve over time..
 
 That's all ! Every other module can call for a `db_session` from this module, and it'll do the trick 🚀
 
@@ -471,7 +496,7 @@ def trigger_etl():
             st.session_state["lastjob"] = date
 ```
 
-This way we can get a nice metric :
+This way we can get a nice metric to display the last time the ETL has ran :
 
 ![metric_date](metric_date.png#center)
 
@@ -563,7 +588,7 @@ We use a double security check, to verify if the PID file is not created already
 try to load the page).
 
 We get the signal handlers to do some cleanup when the process receive the termination signal from the parent process (i.e. the app
-is shutdown).
+is shutdown), so that the thread can remove the pid file and so on.
 
 Then we start the timer and launch an infinite loop until an Exception is raised by signal handler.
 This way the script will remove the pid file before exiting.
@@ -572,7 +597,7 @@ This way the script will remove the pid file before exiting.
 
 Good ! Now we have a full ETL to load into the database the last prices exposed on the French API.
 
-Let's craft a nice dashboard so that users can :
+Let's craft a nice and UX friendly dashboard so that users can :
 
 - A main page, with a price dashboard showing price list and redirection to other pages of the app
 - Login into the website, retrieve their password / login if they forgot it automatically
@@ -622,28 +647,38 @@ For logged users, the main purpose are, if I put myself into a user shoes, by or
 
 #### Admin user
 
-For the admin user, a landing page shall provide : 5. Insight about app engagement
-![admin](app_ui/admin.png#center) 6. Some management option to handle operation for users (password resets, ETL refresh if fails..)
-![admin_actions_1](app_ui/admin_actions_1.png#center)
-![admin_actions_2](app_ui/admin_actions_2.png#center)
+For the admin user, a landing page shall provide :
+
+5. Insight about app engagement
+   ![admin](app_ui/admin.png#center)
+
+6. Some management option to handle operation for users (password resets, ETL refresh if fails..)
+   ![admin_actions_1](app_ui/admin_actions_1.png#center)
+   ![admin_actions_2](app_ui/admin_actions_2.png#center)
 
 As this page will be accessible to _admin_ user only, no sensitive data will be exposed.
 
 By bundling all theses stuffs into a single app, deploy it on Streamlit Cloud, we have a live running web app !
 
+And everything is managed by streamlit, no headache !
+
 ![tree](tree.png#center)
 
-## Keep the app alive and DB
+## Keep the app alive and DB on the local filesystem accross time
 
-As it has been explained previously, the DB will bootstrap user objects from S3 storage. However,
-the customized stations are only visible in the SQLite DB.
+As it has been explained previously, the DB will bootstrap `Users` objects from S3 storage. However,
+the instances of `CustomStation`, `Price` and `Stations` are only visible in the SQLite DB.
+There is a risk that we loose the SQLite file (in case of reboot of the Streamlit environment, they explicitely
+express that they will not maintain a local filesystem, it's up to the developer to setup some workaround mecanism)
 
-To ensure the application doesn't enter into sleeping mode, some mecanism has to be setup in order
-to produce traffic on the app.
+To ensure the application doesn't enter into sleeping mode, and that the Streamlit orchestrator removes the
+container/VM or server where the app resides, some application logic has to be setup in order
+to produce traffic on the app. This way we feel safe about these eventuality.
 
 ![sleeping](sleeping.png#center)
 
-To do this, I borrewed a nice Github action from another very cool made also by a French developer, <cite>Jean Milpied[^2]</cite>
+To do this, and ensure that at least 1 visit will be produced on the website I borrewed a nice Github action from
+another very cool app made also by a French developer, <cite>Jean Milpied[^2]</cite>
 
 Here is the Github Action YAML file :
 
@@ -718,7 +753,8 @@ console.log(process.version);
 })();
 ```
 
-The script is triggered using a Docker Image of puppeteer :
+The script is triggered using a Docker Image of puppeteer, and probe the website and click on
+wake up if it's sleeping :
 
 ```Dockerfile
 # probe-action/Dockerfile
@@ -736,7 +772,11 @@ Using this technic, every 48 hours, the script will trigger a probe action and e
 However, the current downside of current version, is the lack of ability to make Green/Blue deployments, meaning that
 if the current Streamlit service fails, the app is deployed again elsewhere without the saved Sqlite DB.
 
-Some backup mecanism could be set up, but at this point, using SQlite might be uneffective.
+This happened a few time during development, but for a side project without any particular ambition, It seems
+rather enough to me !
+
+Some backup mecanism could be set up, but at this point, using SQlite might be uneffective. I will add a TODO note in the project for the future
+to implement some backup logic.
 
 ## Conclusion
 
@@ -746,4 +786,15 @@ Streamlit is a very versatile tool, giving the possibility to :
 - with some hacks, build up a small ETL to give some daily updates to the data exposed. Do not take it as a
   production battle tested feature, but for some fun side projects, it will be enough.
 
-Make sure your are giving a well designed data schema, in order to retrieve the maximum performances from your ORM.
+Make sure your are giving a well designed data schema, in order to retrieve the maximum performances from your ORM, implementing
+the app logic will be so easy and straightforward !
+
+Besides, you will have fancy ORM objects, always nice when implementing a backend !
+
+A lot of❤️ to various developers who Open sourced their apps ([pdf-workdesk](https://pdfworkdesk.streamlit.app/),
+[reparatorAI](https://reparatorai.streamlit.app/), librairies ([Streamlit-Authenticator](https://github.com/mkhorasani/Streamlit-Authenticator/)),
+without them the work would have been way much harder, or maybe impossible.
+Give them a lot of 🌟, it will please them a lot !
+
+My thanks goes also to Streamlit teams, thanks a lot for making possible for developers to expose their
+crafted dashboards for free. Very appreciated !

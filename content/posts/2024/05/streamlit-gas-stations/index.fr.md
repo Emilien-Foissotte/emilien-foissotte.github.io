@@ -28,7 +28,7 @@ Après la lecture de ce billet de blog, vous aurez les bases pour construire des
 et pour scrapper vos propres sources de données pour les exposer 🚀.
 
 Simple lecteur sans vélléité de dev ? Vous pourrez économiser à la pompe avec le dashboard 🤑 Et réinvestir le
-reste pour la [transition écologique](https://green-got.com/) 😇
+reste pour la [transition écologique](https://green-got.com/) (gagnez 1 mois gratuit avec le code `emilien-foissotte`) 😇
 
 C'est parti !
 
@@ -58,7 +58,7 @@ L'idée a donc germée, mon nouvel objectif de projet était très clair : crée
 uniquement du free-tier. Ce dashboard devait pouvoir être accessible par n'importe qui, et on devait pouvoir y créer son compte,
 gérer ses listes de stations et surtout faire des économies sur le carburant. ⛽
 
-_PS : D'ailleurs, l'énergie la moins chère reste toujours celle qu'on ne consomme pas, prenez votre vélo ou votre paire de jambes
+_PS : D'ailleurs, l'énergie la moins chère reste toujours celle qu'on ne consomme pas. Prenez votre vélo ou votre paire de jambes
 dès que possible, c'est bon pour votre corps, votre porte-monnaie, votre esprit et pour la planète !_ 🌱
 
 {{<figure src="frontpage.png" caption="La page d'accueil du dashboard" >}}
@@ -718,7 +718,7 @@ Tout est hosté par Streamlit, aucune prise de tête !
 
 ![tree](tree.png#center)
 
-## Garder l'application active et le fichier DB local
+## Garder l'application active et le fichier DB local dans la durée
 
 Comme nous l'avons revu auparavant, la database SQLite va bootstrapper les différentes instances de `Users`
 sauvegardées dans le fichier d'authentification, sauvegardé sur le stockage AWS S3.

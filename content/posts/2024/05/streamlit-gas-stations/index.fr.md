@@ -4,10 +4,9 @@ cover:
   image: "cover.png"
   alt: "Carburoam Front Page"
   relative: true
-
-date: 2024-05-10T14:45:59+02:00
-publishDate: 2024-05-10T14:45:59+02:00
-draft: true
+date: 2024-06-09T18:53:22+0200
+publishDate: 2024-06-09T18:53:22+0200
+draft: false
 tags: ["DataEng", "Python", "Streamlit", "Data"]
 ShowToc: true
 TocOpen: false

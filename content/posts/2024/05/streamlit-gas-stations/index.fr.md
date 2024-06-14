@@ -854,7 +854,7 @@ Streamlit est un outil extrêmement polyvalent, qui donne la possiblité de
   projet fun, c'est amplement suffisant.
 
 Dans tout projet Data, assurez-vous d'avoir un schéma de donnée cohérent et évolutif. Construire ensuite votre front et la
-logique de l'application n'en sera que diablemenet plus simple et efficace.
+logique de l'application n'en sera que diablement plus simple et efficace.
 
 En plus d'avoir des objets d'ORM élégants..
 

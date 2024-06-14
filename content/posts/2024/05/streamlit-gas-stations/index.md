@@ -373,7 +373,9 @@ A session instanciation is done :
 As we will be using a LRU cache, less frequent call will be made to the sqlalchemy engine.
 Python will use same output from function `get_session` more often, until the cache expires.
 
-What is this weird function `create_gastypes` ? If sqlalchemy detects that the Sqlite database is
+What is this weird function `create_gastypes` ? 
+
+If sqlalchemy detects that the Sqlite database is
 empty, it will trigger creation of the empty tables.
 But to properly work, our gas_type table has to be fed up with data from the specifications of the [Open Data API](https://www.prix-carburants.gouv.fr/rubrique/opendata/).
 
@@ -629,7 +631,8 @@ For newcomers, the main ideas are :
 1. To provide a way to create an account on the platform
    ![welcome](app_ui/welcome.png#center)
 2. View a demo of the dashboard. I would never create an account on something I can't see before, so adding this option is a real bonus.
-   ![demo](app_ui/demo.png#center)
+   ![demo1](app_ui/demo_1.png#center)
+   ![demo2](app_ui/demo_2.png#center)
 3. Show an about page in order to let user have a look about this app
    ![about](app_ui/about.png#center)
 

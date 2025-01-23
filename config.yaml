@@ -24,12 +24,15 @@ languages:
         - name: Projects
           url: https://www.datascienceportfol.io/EmilienFoissotte
           weight: 5
+        - name: CV
+          url: https://emilienfoissotte.fr/public/sharefolder/CV_ML_DataEngineer_EMILIEN_FOISSOTTE_EN.pdf
+          weight: 6
         - name: Posts
           url: /archives/
-          weight: 6
+          weight: 7
         - name: Tags
           url: /tags/
-          weight: 7
+          weight: 8
 
   fr:
     languageName: ":fr:"
@@ -48,12 +51,15 @@ languages:
         - name: Projets
           url: https://www.datascienceportfol.io/EmilienFoissotte
           weight: 5
+        - name: CV
+          url: https://emilienfoissotte.fr/public/sharefolder/CV_ML_DataEngineer_EMILIEN_FOISSOTTE_FR.pdf
+          weight: 6
         - name: Posts
           url: /archives/
-          weight: 6
+          weight: 7
         - name: Catégories
           url: /frtags/
-          weight: 7
+          weight: 8
 
 minify:
   disableXML: true

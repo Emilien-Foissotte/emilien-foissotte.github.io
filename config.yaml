@@ -1,7 +1,9 @@
 baseURL: "https://emilien-foissotte.github.io/"
 title: "Blog | Émilien F. "
 theme: "PaperMod"
-paginate: 5
+# paginate: 5
+pagination:
+  pagerSize: 5
 enableRobotsTXT: true
 
 languages:
@@ -69,6 +71,8 @@ params:
   author: Émilien Foissotte
   comments: true
   defaultTheme: auto # dark, light
+  social: true
+
 
   ShowReadingTime: true
   ShowShareButtons: true
@@ -146,3 +150,7 @@ params:
     inputPosition: top
     theme: light
     lang: en
+
+ignoreLogs:
+  - 'warning-goldmark-raw-html'
+

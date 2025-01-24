@@ -21,9 +21,9 @@ Let's go !
 
 ## Intro
 
-Nowadays, working in limited internet connection can occur and there is a huge gap compared to our workstation setup. 🦾
+Nowadays, working in limited internet connection can occur and there is a huge gap compared to our workstation setup 🦾
 
-Connection speed is very slow, with a very broken bandwith. This makes it very difficult to work in those environments, but with a few
+In those situations, connection speed might be very slow, with a very broken bandwith. This makes it very difficult to work in those environments, but with a few
 preparation you might be as effective than before ! 💥
 
 ![sloth](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzN1eTJlY2Y5cndiaGdydDdhZW9iZjE3bzhpZ3VtczZwODhyY3p5NyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xOu5Gw81qULRh6/giphy.gif#center)
@@ -33,7 +33,7 @@ Get ready to boost your productivity, on a train, on a bus or enjoying a family 
 ## Keep a browsable documentation, everywhere
 
 Never received a RTFM raising an Issue ? Make yourself a gift, read the documentation when approaching a
-new concept or feature of a package. 📖
+new concept or feature of a package ! 📖
 
 ### Unix troubles
 
@@ -225,4 +225,4 @@ It's a great way of standing on <cite> _the shoulders of giants_ [^3]</cite>, to
 efficient documentation, RTFM. And nowadays, having a copilot is a great you to have straight to the point
 code suggestions, do not underestimate it.
 
-[^3]: Science is cumulative, [wikipedia]( https://en.wikipedia.org/wiki/Standing_on_the_shoulders_of_giants %C3%A9ants) pour
+[^3]: Knowledge is cumulative, [wikipedia]( https://en.wikipedia.org/wiki/Standing_on_the_shoulders_of_giants %C3%A9ants) pour

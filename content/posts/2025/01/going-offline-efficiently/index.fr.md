@@ -25,7 +25,7 @@ C'est parti !
 De nos jours, travailler avec une connexion Internet limitée peut arriver et il y a un énorme écart par rapport à une configuration
 de poste de travail de développement. 🦾
 
-La vitesse de connexion est très lente, avec une bande passante instable.
+Dans ces cas, la vitesse de connexion peut devenir très lente, avec une bande passante instable.
 Cela peut rendre très difficile le travail dans ces environnements, mais avec un peu de préparation, vous pourriez
 être aussi efficace qu'avant ! 💥
 
@@ -225,4 +225,4 @@ C'est un excellent moyen de <cite> _se tenir sur les épaules des géants_[^3] <
 efficace, RTFM. Et de nos jours, avoir un copilote est un excellent moyen d'obtenir des suggestions de code précises, ne sous-estimez pas cette
 force !
 
-[^3]: La science est cumulative, [wikipedia](https://fr.wikipedia.org/wiki/Des_nains_sur_des_%C3%A9paules_de_g%C3%A9ants)
+[^3]: Le savoir est cumulatif, [wikipedia](https://fr.wikipedia.org/wiki/Des_nains_sur_des_%C3%A9paules_de_g%C3%A9ants)

@@ -6,7 +6,7 @@ cover:
   image: "cover.jpg"
   relative: true
   alt: "Coding in the countryside"
-draft: true
+draft: false
 tags: ["DataEng", "LLM", "Duckdb", "Python"]
 ShowToc: false
 TocOpen: false

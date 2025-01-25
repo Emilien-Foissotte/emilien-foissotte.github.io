@@ -6,7 +6,7 @@ cover:
   image: "cover.jpg"
   relative: true
   alt: "Coder à la campagne"
-draft: true
+draft: false
 tags: ["DataEng", "LLM", "Duckdb", "Python"]
 ShowToc: true
 TocOpen: false

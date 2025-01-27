@@ -9,14 +9,14 @@
     <img src="https://img.shields.io/github/commit-activity/w/Emilien-Foissotte/emilien-foissotte.github.io" alt="GitHub commit activity">
   </a>
   <!-- add python version badge -->
-  <a href="https://github.com/Emilien-Foissotte/emilien-foissotte.github.io/blob/main/">
+  <a href="https://github.com/Emilien-Foissotte/emilien-foissotte.github.io/blob/main/.github/workflows/hugo.yaml">
     <img src="https://img.shields.io/badge/hugo-0.140.2-red?logo=hugo" alt="Hugo version">
   </a>
   <!-- add build status -->
   <a href="https://github.com/emilien-foissotte/emilien-foissotte.github.io/actions/workflows/hugo.yaml">
     <img src="https://github.com/emilien-foissotte/emilien-foissotte.github.io/actions/workflows/hugo.yaml/badge.svg" alt="Deploy job">
   </a>
-  <a href="https://carburoam.streamlit.app/demo">
+  <a href="https://emilien-foissotte.github.io/">
     <img src="https://img.shields.io/badge/website-online-green?logo=github" alt="Github Pages online">
   </a>
 </p>
@@ -84,17 +84,17 @@ git config --local user.email "emilienfoissotte44@gmail.com"
 
 Then review your content `hugo server -D` to render draft.
 
-### Edit your content 
+### Edit your content
 
 Add some markdowns under content, review if it gets a nice rendering `hugo server -D`
 to render also drafts.
 
-### Publish 
+### Publish
 
 If that sounds right, push to the `main` branch, Github Action will cary on the job to
 deploy it.
 
-### Repeat, and share if you liked :) 
+### Repeat, and share if you liked :)
 
 ## Usage
 
@@ -107,7 +107,6 @@ Even though this project is personal, any suggestions or pull requests are happi
 ## License
 
 <div align="center" style="font-size:12px; color:lightgrey;">
-    <hr style="margin-bottom: 6%; margin-top: 6%;">
     <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
         <img alt="Creative Commons License" style="border-width:0"
             src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />

@@ -27,12 +27,15 @@ languages:
         - name: CV
           url: https://emilienfoissotte.fr/public/sharefolder/CV_ML_DataEngineer_EMILIEN_FOISSOTTE_EN.pdf
           weight: 6
+        - name: Publications
+          url: /publications/
+          weight: 7
         - name: Posts
           url: /archives/
-          weight: 7
+          weight: 8
         - name: Tags
           url: /tags/
-          weight: 8
+          weight: 9
 
   fr:
     languageName: ":fr:"
@@ -54,12 +57,15 @@ languages:
         - name: CV
           url: https://emilienfoissotte.fr/public/sharefolder/CV_ML_DataEngineer_EMILIEN_FOISSOTTE_FR.pdf
           weight: 6
+        - name: Publications
+          url: /publications/
+          weight: 7
         - name: Posts
           url: /archives/
-          weight: 7
+          weight: 8
         - name: Catégories
           url: /frtags/
-          weight: 8
+          weight: 9
 
 minify:
   disableXML: true
